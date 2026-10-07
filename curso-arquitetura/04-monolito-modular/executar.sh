@@ -6,6 +6,5 @@ case "${1:-modulos}" in
     mkdir -p pratica/out
     javac -encoding UTF-8 -d pratica/out pratica/financeiro/*.java pratica/academico/*.java pratica/DemoModulos.java
     java -cp pratica/out DemoModulos ;;
-  sem-transacao|com-transacao) python3 transacao.py "$1" ;;
-  *) echo 'Use: modulos | sem-transacao | com-transacao' >&2; exit 1 ;;
+  *) echo 'Use: bash executar.sh modulos' >&2; exit 1 ;;
 esac
