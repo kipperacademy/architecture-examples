@@ -19,6 +19,8 @@ public final class EnrollStudentService implements EnrollStudent {
 
     @Override
     public Result enroll(Command command) {
+        // Validate the command before contacting a payment provider.
+        new Enrollment(command.id(), command.student(), command.course(), command.amountInCents());
         var payment = paymentProvider.charge(new PaymentProvider.PaymentCommand(
                 command.id(), command.student(), command.course(), command.amountInCents()));
         if (payment.status() != PaymentStatus.CONFIRMED) {

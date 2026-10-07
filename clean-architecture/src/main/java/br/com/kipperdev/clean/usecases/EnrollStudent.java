@@ -18,6 +18,8 @@ public final class EnrollStudent {
     }
 
     public Result execute(Request request) {
+        // Validate the command before contacting a payment provider.
+        new Enrollment(request.id(), request.student(), request.course(), request.amountInCents());
         var existing = enrollmentRepository.findAll().stream()
                 .filter(enrollment -> enrollment.id().equals(request.id())).findFirst();
         if (existing.isPresent()) {

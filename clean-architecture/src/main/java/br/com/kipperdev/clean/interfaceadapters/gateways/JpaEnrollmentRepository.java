@@ -34,7 +34,11 @@ public final class JpaEnrollmentRepository implements EnrollmentRepository, Pend
     }
 
     @Override public void save(Enrollment enrollment) {
-        inTransaction(em -> em.merge(new EnrollmentEntity(enrollment)));
+        inTransaction(em -> {
+            var existing = em.find(EnrollmentEntity.class, enrollment.id());
+            if (existing == null) em.persist(new EnrollmentEntity(enrollment));
+            else existing.updateDetails(enrollment.student(), enrollment.course());
+        });
     }
 
     @Override public List<Enrollment> findAll() {
@@ -42,6 +46,19 @@ public final class JpaEnrollmentRepository implements EnrollmentRepository, Pend
             return em.createQuery("select e from EnrollmentEntity e order by e.createdAt, e.id", EnrollmentEntity.class)
                     .getResultList().stream().map(EnrollmentEntity::toDomain).toList();
         }
+    }
+
+    @Override public Optional<Enrollment> findById(String id) {
+        try (var em = entityManagerFactory.createEntityManager()) {
+            return Optional.ofNullable(em.find(EnrollmentEntity.class, id)).map(EnrollmentEntity::toDomain);
+        }
+    }
+
+    @Override public void deleteById(String id) {
+        inTransaction(em -> {
+            var enrollment = em.find(EnrollmentEntity.class, id);
+            if (enrollment != null) em.remove(enrollment);
+        });
     }
 
     @Override public void save(PendingEnrollment pending) {
