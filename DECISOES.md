@@ -8,7 +8,7 @@ Fonte: transcrição verbatim do Granola, encontro “Encontro ao Vivo 🎧” d
 - “Então eu vou trazer exemplo da CleanArc e da arquitetura hexagonal para deixar muito claro como é. Vou trazer o código do MPEG-8 para a gente destrinchar”. A transcrição reconhece literalmente “MPEG-8”; não há contexto suficiente para corrigir essa sigla com segurança. A promessa verificável é trazer código para explicar as duas arquiteturas.
 - “Então eu posso ter aqui lá no meu servidor uma única interface que eu vou chamar de PaymentProvider. [...] PaymentProvider vai ter um método chamado charge.” Uma implementação do fornecedor deve respeitar esse contrato; o fluxo externo usa a abstração sem conhecer os detalhes daquela implementação.
 - “Então aqui o meu acoplamento de matrícula para cobrança deveria ser somente com o status da cobrança. [...] Cobrança confirmada, matrícula libera. Cobrança pendente, matrícula bloqueada.” O núcleo traduz estados externos para estados internos e não acessa campos da entidade/SDK de pagamento.
-- AppMax não é nomeada na transcrição. O pedido atual escolhe AppMax como exemplo; por isso, o código implementa um adaptador local simulado e não afirma integração real.
+- AppMax não é nomeada na transcrição. O pedido escolheu AppMax como exemplo: há um simulador local para a aula e adapters HTTP Pix baseados na API oficial, configuráveis com credenciais do merchant no ambiente. Não foi feita chamada real sem credenciais.
 
 ## Como isso aparece nos projetos
 
@@ -17,12 +17,12 @@ Fonte: transcrição verbatim do Granola, encontro “Encontro ao Vivo 🎧” d
 | Sem Spring; código “na mão” | Java puro, interfaces, construtores e `main` como ponto de composição |
 | `PaymentProvider.charge` como contrato da aplicação | Mesma porta interna nas duas versões |
 | Matrícula depende somente do status | Apenas `CONFIRMED` permite persistir a matrícula |
-| Provider concreto isolado atrás de contrato | `AppMaxPaymentAdapter` traduz rótulos simulados para `PaymentStatus` interno |
-| Aula 03: Ana e Clara confirmadas; Bia pendente; armazenamento intercambiável | Mesmos estudantes/regra para facilitar comparação; repositório em memória simples para manter o foco em arquitetura |
+| Provider concreto isolado atrás de contrato | Adapters simulados e HTTP AppMax traduzem status externo para `PaymentStatus` interno |
+| Aula 03: Ana e Clara confirmadas; Bia pendente; armazenamento intercambiável | JPA/Hibernate com H2 em arquivo persiste matrículas e tentativas Pix; os casos confirmados/pending preservam a mesma regra |
 | Aula 02: Adapter traduz centavos e formato externo | Montagem demonstra adapter sem trazer SDK, segredo ou dados de cartão |
 
 ## Por que há dois desenhos
 
-Os limites se sobrepõem, mas a ênfase muda. Em `clean-architecture/`, o foco é a política/caso de uso e a direção das dependências para o núcleo. Em `hexagonal/`, o foco é dar nome às conversas: uma porta de entrada para matrícula, portas de saída para pagamento e persistência, e adaptadores para os agentes externos.
+Os conceitos se sobrepõem, mas os exemplos agora usam os nomes próprios das fontes originais. Em `clean-architecture/`, os diretórios são `entities/`, `usecases/`, `interfaceadapters/` e `frameworksdrivers/`; a regra de dependência aponta para dentro. Em `hexagonal/`, o núcleo define primary/secondary ports e os adapters correspondentes são primary/secondary (driving/driven), seguindo Cockburn.
 
-Esses exemplos são intencionalmente pequenos para fins de aula. Não modelam transação distribuída entre cobrança e matrícula, idempotência, consulta/reconciliação, webhook, credenciais ou falhas de rede. Um pagamento real confirmado seguido de falha de persistência exige decisões adicionais; a transcrição da aula de 29/09 discute falhas parciais em outros contextos e este exercício não deve sugerir atomicidade entre AppMax e o armazenamento local.
+Esses exemplos continuam pequenos para fins de aula. O fluxo Pix real guarda a tentativa pendente e só matricula após consulta autenticada do pedido AppMax. A versão Clean usa webhooks como gatilhos e confirma estado pela API; a Hexagonal usa polling explícito. A confirmação e a matrícula são transacionais dentro do banco H2 por meio de JPA, mas a cobrança externa não participa dessa transação. Webhooks AppMax não têm HMAC ou token documentados, então o corpo recebido não é prova de pagamento.
