@@ -1,0 +1,17 @@
+Fernanda, nesta aula o aluno precisa escolher uma técnica de escala pelo recurso pressionado e reconhecer o custo que ela introduz. A proposta é trinta minutos. Contextualize a escola: há consultas repetidas ao preço de um curso e uma aluna autenticada navegando entre pedidos. Catálogo público e sessão privada têm necessidades distintas.
+
+Escalar significa sustentar mais carga dentro dos objetivos de serviço. Antes de multiplicar instâncias, observe requisições, latência, erros e saturação. A demo contará operações, não medirá um benchmark de tempo. Escala vertical aumenta recursos de uma instância; horizontal distribui entre instâncias. Se o gargalo está na origem compartilhada, mais servidores podem pressioná-la ainda mais.
+
+Cache guarda uma cópia reaproveitável. Na falta da cópia, busca a origem; quando encontra, reutiliza. Esse mesmo mecanismo economiza consultas e pode servir um valor antigo. TTL e invalidação são políticas diferentes; aqui só teremos invalidação explícita. Uma compra que exige preço atual precisa de uma verificação autoritativa apropriada.
+
+CDN entrega conteúdo pela borda segundo regras de cache. Uma imagem pública pode se beneficiar; isso não elimina automaticamente consultas da API de matrícula. Conteúdo privado exige cuidado com personalização. Load balancing distribui requisições entre alvos disponíveis, mas não remove todo gargalo nem garante sucesso por operação.
+
+Stateless significa que a réplica não depende do estado local de uma sessão anterior para atender à próxima requisição. O sistema continua tendo estado. Sticky sessions mantêm afinidade, mas preservam dependência daquela réplica. Rate limiting restringe admissões por chave e intervalo: protege capacidade, não a cria. Três por réplica não significa três no sistema inteiro.
+
+Na prática, abra Catálogo, Cache Preço e os dois mains de cache. Pergunte quantas leituras cinco consultas iguais produzem. Rode Demo Sem Cache: cinco acessos à origem. Rode Demo Cache: apenas um. Mostre que o contador é incrementado na origem. Depois a origem muda de dez mil para doze mil centavos; o cache ainda responde dez mil. Após invalidar, responde doze mil e o contador chega a dois. Relacione economia e desatualização à mesma cópia mantida em memória.
+
+Em Demo Estado Local, destaque duas instâncias de Sessões. A réplica A encontra Ana; B fica sem sessão. Em Demo Estado Compartilhado, ambas recebem o mesmo objeto e encontram Ana. São objetos na mesma JVM, não servidores reais ou Redis. A demo isola a causa lógica; armazenamento entre processos acrescenta rede, latência e falhas.
+
+Por fim, abra Demo Limite e a operação permitir. Ana passa nas três primeiras chamadas; quarta e quinta são recusadas. Bia tem cota própria e Ana volta a passar no tempo sessenta. O relógio é um argumento controlado para não esperar um minuto. O método retorna boolean; um adaptador HTTP poderia traduzi-lo para uma resposta apropriada. O mapa é local e sequencial, sem garantia distribuída.
+
+Feche pedindo técnica, recurso poupado e custo novo. Um exercício útil é criar dois limitadores de três e alternar seis chamadas: cada um tem sua própria cota. Medir, identificar, mudar uma variável e explicar o efeito é mais útil do que decorar nomes de infraestrutura.

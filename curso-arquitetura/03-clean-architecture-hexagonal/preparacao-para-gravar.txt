@@ -1,0 +1,21 @@
+Fernanda, esta aula tem quatro blocos de cinco minutos: teoria de Clean Architecture, prática de Clean, teoria de Hexagonal e prática de Hexagonal.
+
+A história continua sendo a escola. Ana e Clara têm pagamento confirmado; Bia está pendente. A pergunta que conduz tudo é: se eu trocar onde salvo as matrículas ou de onde vêm os pedidos, preciso reescrever a regra do pagamento?
+
+Comece pela capa. Depois, explique Clean como a separação entre as políticas do negócio e os detalhes técnicos. No domínio, Pedido tem a condição que permite matricular. No caso de uso, MatricularAluno coordena a operação: consulta essa condição e pede para salvar. Se o pagamento está pendente, retorna antes de persistir.
+
+O ponto central é a direção das dependências no código. O caso de uso conhece o contrato RepositorioMatriculas. A implementação de arquivo conhece esse contrato e os detalhes de escrita. A regra não conhece Files nem o caminho do arquivo. Lembre de distinguir o fluxo da execução da dependência de tipos: a chamada chega ao arquivo, mas a implementação externa depende do contrato definido dentro.
+
+Na primeira prática, abra Pedido, MatricularAluno e o contrato. Depois mostre DemoCleanMemoria inteira. A montagem precisa ficar visível: criar o repositório e passá-lo ao construtor do caso de uso. Peça uma previsão. A lista salva deve conter Ana e Clara, mas uma nova instância em memória começa vazia.
+
+Em seguida, abra DemoCleanArquivo. Os pedidos e o caso de uso são os mesmos; muda o repositório escolhido. Agora, outra instância recupera Ana e Clara. Abra o arquivo real na tela. Esse é o primeiro momento de surpresa. A persistência vem da implementação de arquivo; a interface permite que essa escolha fique fora da regra.
+
+Na segunda teoria, apresente a Hexagonal como o interior da aplicação e suas conversas com o exterior. As duas arquiteturas são compatíveis. O hexágono não exige seis portas.
+
+Porta de entrada é o que a aplicação oferece: Matricular, com a operação executar. MatricularAluno implementa essa operação. Os adaptadores de terminal e CSV chamam a porta. Porta de saída é o que a aplicação precisa: salvar por RepositorioMatriculas. Memória e arquivo implementam esse contrato.
+
+Adaptador faz tradução. O CSV separa a linha de Bia em campos, converte o status e chama a aplicação. Ele não ganha uma segunda regra de pagamento. Mostre no main quem instancia e injeta cada objeto. Injeção monta os colaboradores; inversão define quem conhece o contrato de quem.
+
+Na última prática, abra DemoHexagonalTerminal. Ana confirmada deve entrar; Bia pendente deve ser recusada. Cada comando começa com memória nova. Depois abra DemoHexagonalCsv e processe os três pedidos de uma vez. O resultado esperado continua sendo Ana e Clara. Esse é o segundo momento de surpresa: a entrada virou um lote, sem duplicar a decisão do negócio.
+
+Feche perguntando onde ficariam a conversão de uma requisição HTTP e a regra do pagamento. Conversão no adaptador; decisão no núcleo. O aluno deve conseguir explicar essa fronteira, além de reconhecer os nomes das arquiteturas.

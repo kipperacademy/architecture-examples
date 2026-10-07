@@ -1,0 +1,412 @@
+{
+  "checkedAt": "2026-10-06",
+  "entryCount": 29,
+  "results": [
+    {
+      "id": "aula-01-email",
+      "sourceOnly": true,
+      "files": [
+        "Contratos.java",
+        "DemoEmail.java",
+        "Email.java",
+        "Matriculas.java",
+        "PagamentoLocal.java"
+      ],
+      "exitCode": 0,
+      "stdout": "E-MAIL DISPONÍVEL\n  E-mail enviado para Ana\n  E-mail enviado para Bia\n  E-mail enviado para Clara\nAcessos liberados: 3/3\nAvisos pendentes: 0\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-01-acoplamento",
+      "sourceOnly": true,
+      "files": [
+        "Contratos.java",
+        "DemoAcoplamento.java",
+        "Email.java",
+        "MatriculasAcopladas.java",
+        "PagamentoLocal.java"
+      ],
+      "exitCode": 0,
+      "stdout": "E-MAIL FORA DO AR — VERSÃO ACOPLADA\nAna: E-mail fora do ar\nBia: E-mail fora do ar\nClara: E-mail fora do ar\nAcessos liberados: 0/3\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-01-desacoplamento",
+      "sourceOnly": true,
+      "files": [
+        "Contratos.java",
+        "DemoDesacoplamento.java",
+        "Email.java",
+        "Matriculas.java",
+        "PagamentoLocal.java"
+      ],
+      "exitCode": 0,
+      "stdout": "VERSÃO DESACOPLADA\nAcessos liberados: 3/3\nAvisos pendentes: 3\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-01-whatsapp",
+      "sourceOnly": true,
+      "files": [
+        "Contratos.java",
+        "DemoWhatsApp.java",
+        "Matriculas.java",
+        "PagamentoLocal.java",
+        "WhatsApp.java"
+      ],
+      "exitCode": 0,
+      "stdout": "AVISO POR WHATSAPP\n  WhatsApp enviado para Ana\n  WhatsApp enviado para Bia\n  WhatsApp enviado para Clara\nAcessos liberados: 3/3\nAvisos pendentes: 0\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-01-pagamento-pendente",
+      "sourceOnly": true,
+      "files": [
+        "Contratos.java",
+        "DemoPagamentoPendente.java",
+        "Email.java",
+        "Matriculas.java",
+        "PagamentoLocal.java"
+      ],
+      "exitCode": 0,
+      "stdout": "PAGAMENTO PENDENTE\nAcessos liberados: 0/3\nAvisos pendentes: 0\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-02-compra",
+      "sourceOnly": true,
+      "files": [
+        "Checkout.java",
+        "DemoCompra.java",
+        "DescontoPix.java",
+        "Fornecedor.java",
+        "Pagamento.java",
+        "PagamentoFactory.java",
+        "PagamentoLegadoAdapter.java",
+        "PagamentoLocal.java",
+        "PoliticaPreco.java",
+        "RegistroCompras.java",
+        "SdkLegado.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Total calculado: 9000 centavos\nSDK simulado recebeu: R$ 90.00\nPagamento confirmado: 9000 centavos\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-02-sem-adapter",
+      "sourceOnly": true,
+      "files": [
+        "DemoSemAdapter.java",
+        "SdkLegado.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Intenção: 9000 centavos = R$ 90.00\nSDK simulado recebeu: R$ 9000.00\nValor interpretado pelo SDK: R$ 9000\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-02-sem-desconto",
+      "sourceOnly": true,
+      "files": [
+        "Checkout.java",
+        "DemoSemDesconto.java",
+        "Fornecedor.java",
+        "Pagamento.java",
+        "PagamentoFactory.java",
+        "PagamentoLegadoAdapter.java",
+        "PagamentoLocal.java",
+        "PoliticaPreco.java",
+        "RegistroCompras.java",
+        "SdkLegado.java",
+        "SemDesconto.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Total calculado: 10000 centavos\nSDK simulado recebeu: R$ 100.00\nPagamento confirmado: 10000 centavos\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-02-outro-fornecedor",
+      "sourceOnly": true,
+      "files": [
+        "Checkout.java",
+        "DemoOutroFornecedor.java",
+        "DescontoPix.java",
+        "Fornecedor.java",
+        "Pagamento.java",
+        "PagamentoFactory.java",
+        "PagamentoLegadoAdapter.java",
+        "PagamentoLocal.java",
+        "PoliticaPreco.java",
+        "RegistroCompras.java",
+        "SdkLegado.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Total calculado: 9000 centavos\nPagamento local recebeu: 9000 centavos\nPagamento confirmado: 9000 centavos\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-02-singleton",
+      "sourceOnly": true,
+      "files": [
+        "Checkout.java",
+        "DemoSingleton.java",
+        "DescontoPix.java",
+        "Fornecedor.java",
+        "Pagamento.java",
+        "PagamentoFactory.java",
+        "PagamentoLegadoAdapter.java",
+        "PagamentoLocal.java",
+        "PoliticaPreco.java",
+        "RegistroCompras.java",
+        "SdkLegado.java",
+        "SemDesconto.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Mesmo objeto? true\nTotal calculado: 9000 centavos\nSDK simulado recebeu: R$ 90.00\nTotal calculado: 10000 centavos\nPagamento local recebeu: 10000 centavos\nCompras vistas por Ana: 2\nCompras vistas por Bia: 2\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-03-clean-memoria",
+      "sourceOnly": true,
+      "files": [
+        "adapters/saida/RepositorioEmMemoria.java",
+        "aplicacao/Matricular.java",
+        "aplicacao/MatricularAluno.java",
+        "aplicacao/RepositorioMatriculas.java",
+        "demos/DemoCleanMemoria.java",
+        "dominio/Pedido.java",
+        "dominio/StatusPagamento.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Matrículas salvas: [Ana, Clara]\nNova instância: []\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-03-clean-arquivo",
+      "sourceOnly": true,
+      "files": [
+        "adapters/saida/RepositorioEmArquivo.java",
+        "aplicacao/Matricular.java",
+        "aplicacao/MatricularAluno.java",
+        "aplicacao/RepositorioMatriculas.java",
+        "demos/DemoCleanArquivo.java",
+        "dominio/Pedido.java",
+        "dominio/StatusPagamento.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Matrículas salvas: [Ana, Clara]\nNova instância: [Ana, Clara]\nArquivo real: /Users/fernanda/Desktop/kipperdev/AULAS/curso-arquitetura/studio/runtime/aula-03-clean-arquivo/dados/matriculas.txt\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-03-hex-terminal",
+      "sourceOnly": true,
+      "files": [
+        "adapters/entrada/EntradaTerminal.java",
+        "adapters/saida/RepositorioEmMemoria.java",
+        "aplicacao/Matricular.java",
+        "aplicacao/MatricularAluno.java",
+        "aplicacao/RepositorioMatriculas.java",
+        "demos/DemoHexagonalTerminal.java",
+        "dominio/Pedido.java",
+        "dominio/StatusPagamento.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Ana | matrícula liberada: true\nMatrículas salvas: [Ana]\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-03-hex-csv",
+      "sourceOnly": true,
+      "files": [
+        "adapters/entrada/EntradaCsv.java",
+        "adapters/saida/RepositorioEmMemoria.java",
+        "aplicacao/Matricular.java",
+        "aplicacao/MatricularAluno.java",
+        "aplicacao/RepositorioMatriculas.java",
+        "demos/DemoHexagonalCsv.java",
+        "dominio/Pedido.java",
+        "dominio/StatusPagamento.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Ana | matrícula liberada: true\nBia | matrícula liberada: false\nClara | matrícula liberada: true\nMatrículas salvas: [Ana, Clara]\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-04-modulos",
+      "sourceOnly": true,
+      "files": [
+        "DemoModulos.java",
+        "academico/Matriculas.java",
+        "financeiro/Cobrancas.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Matrículas: [Ana]\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-05-servidor-http",
+      "sourceOnly": true,
+      "files": [
+        "Servidor.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Fontes compilados. A demonstração HTTP não foi iniciada pelo runner.\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-06-sem-cache",
+      "sourceOnly": true,
+      "files": [
+        "Catalogo.java",
+        "DemoSemCache.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Preço: 10000\nPreço: 10000\nPreço: 10000\nPreço: 10000\nPreço: 10000\nConsultas à origem: 5\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-06-cache",
+      "sourceOnly": true,
+      "files": [
+        "CachePreco.java",
+        "Catalogo.java",
+        "DemoCache.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Preço: 10000\nPreço: 10000\nPreço: 10000\nPreço: 10000\nPreço: 10000\nConsultas à origem: 1\nPreço no cache após alteração: 10000\nPreço após invalidar: 12000\nConsultas à origem: 2\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-06-estado-local",
+      "sourceOnly": true,
+      "files": [
+        "DemoEstadoLocal.java",
+        "Replica.java",
+        "Sessoes.java"
+      ],
+      "exitCode": 0,
+      "stdout": "A: Ana\nB: SEM SESSÃO\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-06-estado-compartilhado",
+      "sourceOnly": true,
+      "files": [
+        "DemoEstadoCompartilhado.java",
+        "Replica.java",
+        "Sessoes.java"
+      ],
+      "exitCode": 0,
+      "stdout": "A: Ana\nB: Ana\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-06-limite",
+      "sourceOnly": true,
+      "files": [
+        "DemoLimite.java",
+        "LimitePorJanela.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Ana t=0 pedido 1: true\nAna t=0 pedido 2: true\nAna t=0 pedido 3: true\nAna t=0 pedido 4: false\nAna t=0 pedido 5: false\nBia t=0: true\nAna t=60: true\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-07-retry",
+      "sourceOnly": true,
+      "files": [
+        "DemoRetry.java",
+        "Provedor.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Cliente: UNKNOWN. Timeout não prova falha da cobrança.\nCobranças no provedor: 2\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-07-idempotencia",
+      "sourceOnly": true,
+      "files": [
+        "DemoIdempotencia.java",
+        "ProvedorIdempotente.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Cliente: UNKNOWN. Repetir com a MESMA chave.\nCliente: CONFIRMADO\nCobranças no provedor: 1\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-08-evento-perdido",
+      "sourceOnly": true,
+      "files": [
+        "DemoEventoPerdido.java",
+        "Escola.java",
+        "Estado.java",
+        "Evento.java",
+        "Fila.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Falha entre salvar matrícula e publicar: publicação não executada.\nMatrículas: [Ana]\nEventos na fila: 0\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-08-outbox",
+      "sourceOnly": true,
+      "files": [
+        "DemoOutbox.java",
+        "Escola.java",
+        "Estado.java",
+        "Evento.java",
+        "Fila.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Publicador parado; pendências: 1\nMatrículas: [Ana]\nApós retomar publicador, eventos na fila: 1\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-08-entrega-duplicada",
+      "sourceOnly": true,
+      "files": [
+        "DemoEntregaDuplicada.java",
+        "Evento.java",
+        "Fila.java",
+        "Notificacoes.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Worker parou antes do ACK. Mensagem continua na fila.\nAvisos registrados: [Ana, Ana]\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-08-consumidor-idempotente",
+      "sourceOnly": true,
+      "files": [
+        "DemoConsumidorIdempotente.java",
+        "Evento.java",
+        "Fila.java",
+        "Notificacoes.java"
+      ],
+      "exitCode": 0,
+      "stdout": "Worker parou antes do ACK. Mensagem continua na fila.\nAvisos registrados: [Ana]\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-04-sem-transacao",
+      "sourceOnly": true,
+      "files": [
+        "executar.py",
+        "sem-transacao.sql"
+      ],
+      "exitCode": 0,
+      "stdout": "Vaga 1 já ocupada. Segunda escrita rejeitada pelo banco.\nRecebimentos: ['pedido-ana', 'pedido-bia']\nMatrículas: ['Ana']\n",
+      "stderr": ""
+    },
+    {
+      "id": "aula-04-com-transacao",
+      "sourceOnly": true,
+      "files": [
+        "com-transacao.sql",
+        "executar.py"
+      ],
+      "exitCode": 0,
+      "stdout": "Vaga 1 já ocupada. Segunda escrita rejeitada pelo banco.\nRecebimentos: ['pedido-ana']\nMatrículas: ['Ana']\n",
+      "stderr": ""
+    }
+  ]
+}

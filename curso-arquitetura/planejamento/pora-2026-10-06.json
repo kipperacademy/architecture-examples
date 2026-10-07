@@ -1,0 +1,95 @@
+{
+  "consultadoEm": "2026-10-06",
+  "fonte": "Pora MCP list_contents",
+  "observacao": "deadline é prazo editorial; o MCP não retornou data da sessão de gravação.",
+  "items": [
+    {
+      "id": "de48b944-e110-40bf-86a6-86cca7646a02",
+      "title": "[CURSO ARQUITETURA] Arquitetura de Código: SOLID, Acoplamento, Coesão e Modularização",
+      "type": "YOUTUBE",
+      "deadline": "2026-10-08T12:00:00.000Z",
+      "status": "Backlog",
+      "creator": "Fernanda Kipper | Dev",
+      "brand": null,
+      "driveLink": null,
+      "postLink": null
+    },
+    {
+      "id": "de45b44a-f6b8-40e9-801a-97d907089c66",
+      "title": "[CURSO ARQUITETURA] Clean Architecture e Arquitetura Hexagonal: Ports, Adapters e Inversão de Dependência\t",
+      "type": "YOUTUBE",
+      "deadline": "2026-10-13T12:00:00.000Z",
+      "status": "Backlog",
+      "creator": "Fernanda Kipper | Dev",
+      "brand": null,
+      "driveLink": null,
+      "postLink": null
+    },
+    {
+      "id": "c9e7fb75-6738-4eed-b059-73001723c8af",
+      "title": "[CURSO ARQUITETURA] Design Patterns na Prática: Factory, Strategy, Adapter e Dependency Injection\t",
+      "type": "YOUTUBE",
+      "deadline": "2026-10-15T12:00:00.000Z",
+      "status": "Backlog",
+      "creator": "Fernanda Kipper | Dev",
+      "brand": null,
+      "driveLink": null,
+      "postLink": null
+    },
+    {
+      "id": "cbeec4c9-778e-4536-a790-45b05197a061",
+      "title": "[CURSO ARQUITETURA] Monólito Modular: Como Organizar Domínios, Módulos, Banco de Dados e Transações\t",
+      "type": "YOUTUBE",
+      "deadline": "2026-10-20T12:00:00.000Z",
+      "status": "Backlog",
+      "creator": "Fernanda Kipper | Dev",
+      "brand": null,
+      "driveLink": null,
+      "postLink": null
+    },
+    {
+      "id": "81287ac8-0c15-417c-ac63-96bb35270378",
+      "title": "[CURSO ARQUITETURA] Do localhost à produção: servidores, máquinas virtuais, containers e deploy",
+      "type": "YOUTUBE",
+      "deadline": "2026-10-22T12:00:00.000Z",
+      "status": "Backlog",
+      "creator": "Fernanda Kipper | Dev",
+      "brand": null,
+      "driveLink": null,
+      "postLink": null
+    },
+    {
+      "id": "b98007b2-5209-4478-b597-4d82a738430d",
+      "title": "[CURSO ARQUITETURA] Como Construir Sistemas Escaláveis: Cache, CDN, Load Balancing, Rate Limiting e Stateless\t",
+      "type": "YOUTUBE",
+      "deadline": "2026-10-29T12:00:00.000Z",
+      "status": "Backlog",
+      "creator": "Fernanda Kipper | Dev",
+      "brand": null,
+      "driveLink": null,
+      "postLink": null
+    },
+    {
+      "id": "d7847d49-e69d-4791-95ee-eea22e5b27db",
+      "title": "[CURSO ARQUITETURA] Monólito vs Microserviços: Quando Usar, Comunicação entre Serviços e Dados Distribuídos\t",
+      "type": "YOUTUBE",
+      "deadline": "2026-11-05T12:00:00.000Z",
+      "status": "Backlog",
+      "creator": "Fernanda Kipper | Dev",
+      "brand": null,
+      "driveLink": null,
+      "postLink": null
+    },
+    {
+      "id": "33088303-7bac-41f7-bd2d-d8b267347f93",
+      "title": "[CURSO ARQUITETURA] Arquitetura Assíncrona: Filas, Eventos, Workers, Outbox, Idempotência e Sagas\t",
+      "type": "YOUTUBE",
+      "deadline": "2026-11-12T12:00:00.000Z",
+      "status": "Backlog",
+      "creator": "Fernanda Kipper | Dev",
+      "brand": null,
+      "driveLink": null,
+      "postLink": null
+    }
+  ]
+}

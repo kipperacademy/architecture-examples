@@ -1,0 +1,56 @@
+{
+  "01-solid-acoplamento-coesao": {
+    "status": "editing",
+    "startedAt": 1791315902.523179,
+    "finishedAt": 1791379930.8755,
+    "syncStatus": "error",
+    "attempts": 62,
+    "retryAt": 1791400046.15254,
+    "syncError": "Não foi possível confirmar a mudança no Pora. Uma nova tentativa será feita automaticamente."
+  },
+  "02-design-patterns": {
+    "status": "editing",
+    "startedAt": 1791382915.703684,
+    "finishedAt": 1791382916.999469,
+    "syncStatus": "error",
+    "attempts": 52,
+    "retryAt": 1791400047.213313,
+    "syncError": "Não foi possível confirmar a mudança no Pora. Uma nova tentativa será feita automaticamente."
+  },
+  "03-clean-architecture-hexagonal": {
+    "status": "editing",
+    "startedAt": 1791385735.151305,
+    "finishedAt": 1791385738.680823,
+    "syncStatus": "error",
+    "attempts": 43,
+    "retryAt": 1791400048.276084,
+    "syncError": "Não foi possível confirmar a mudança no Pora. Uma nova tentativa será feita automaticamente."
+  },
+  "04-monolito-modular": {
+    "status": "editing",
+    "startedAt": 1791387090.5998561,
+    "finishedAt": 1791387092.729569,
+    "syncStatus": "error",
+    "attempts": 39,
+    "retryAt": 1791400048.3257542,
+    "syncError": "Não foi possível confirmar a mudança no Pora. Uma nova tentativa será feita automaticamente."
+  },
+  "07-monolito-vs-microservicos": {
+    "status": "editing",
+    "startedAt": 1791388647.402907,
+    "finishedAt": 1791388649.264755,
+    "syncStatus": "error",
+    "attempts": 33,
+    "retryAt": 1791400048.4617338,
+    "syncError": "Não foi possível confirmar a mudança no Pora. Uma nova tentativa será feita automaticamente."
+  },
+  "08-arquitetura-assincrona": {
+    "status": "editing",
+    "startedAt": 1791390963.628499,
+    "finishedAt": 1791390965.8258061,
+    "syncStatus": "error",
+    "attempts": 25,
+    "retryAt": 1791400048.513184,
+    "syncError": "Não foi possível confirmar a mudança no Pora. Uma nova tentativa será feita automaticamente."
+  }
+}

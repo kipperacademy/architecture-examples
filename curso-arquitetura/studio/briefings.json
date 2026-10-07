@@ -1,0 +1,412 @@
+[
+  {
+    "id": "01-solid-acoplamento-coesao",
+    "lessonNumber": 1,
+    "summary": "Organizar responsabilidades e dependências; preservar acesso quando o aviso falha.",
+    "points": [
+      "Definir coesão (responsabilidades relacionadas) e acoplamento (dependências); mostrar o impacto de uma mudança.",
+      "Explicar SRP, OCP, LSP, ISP e DIP; separar inversão de dependência da injeção feita no main.",
+      "Usar mains independentes: DemoEmail, DemoAcoplamento, DemoDesacoplamento, DemoWhatsApp e DemoPagamentoPendente.",
+      "0/3 versus 3/3 resulta da ordem e tratamento da exceção; interface sozinha não garante resiliência.",
+      "Trocar somente a implementação de Notificador no main; não editar Matriculas."
+    ],
+    "scriptPath": "studio/audio/01-preparacao.txt",
+    "audioPath": "studio/audio/01-preparacao.mp3",
+    "audioStatus": "generated",
+    "durationSeconds": 234.893,
+    "generationSource": "ElevenLabs · Rodrigo Souzax — Educational Friendly · Eleven Multilingual v2 · conta contato@fernandakipper.com verificada",
+    "originalDurationSeconds": 234.893,
+    "verification": "Duração medida com ffprobe; decodificação integral com FFmpeg; texto confrontado com roteiro/fontes. Sem escuta humana integral.",
+    "pointDetails": [
+      {
+        "definition": "Coesão é quanto as responsabilidades de uma unidade contribuem para um propósito relacionado. Acoplamento é a dependência entre unidades: tipos conhecidos, chamadas necessárias e condições exigidas para continuar. Uma classe pode ter vários métodos coesos; desacoplar não significa eliminar toda dependência.",
+        "mechanism": "Observe o pedido de mudança e o trecho que precisa ser editado. Criar Email dentro da matrícula faz a regra conhecer uma escolha técnica. Esperar o envio antes de registrar acesso cria também uma dependência de execução.",
+        "example": "MatriculasAcopladas declara Email e faz new Email(emailDisponivel). Para trocar o canal, essa classe muda. Em Matriculas, a escolha fica no main, enquanto os detalhes de envio ficam em Email ou WhatsApp.",
+        "teachingCue": "Pergunte: “A regra de pagamento mudou? Então por que preciso editar a matrícula?” Aponte tipo, criação e ordem, não apenas caixas com nomes."
+      },
+      {
+        "definition": "SRP — Princípio da Responsabilidade Única: separar razões independentes de mudança; critério de acesso e detalhe do aviso respondem a pedidos diferentes.\nOCP — Princípio Aberto/Fechado: permitir uma extensão identificada preservando a parte estável; novo canal pode preservar Matriculas.\nLSP — Princípio da Substituição de Liskov: substituir uma implementação mantendo promessas de comportamento; sucesso sem tentar enviar quebra a expectativa.\nISP — Princípio da Segregação de Interfaces: não obrigar consumidores a depender de operações desnecessárias; matrícula consulta pagamento, sem estorno ou nota.\nDIP — Princípio da Inversão de Dependência: política e detalhes dependem de abstrações; o contrato deve expressar a necessidade da política, sem particularidades do fornecedor.",
+        "mechanism": "DIP aparece nos tipos Notificador e ConsultaPagamento conhecidos por Matriculas e implementados pelos detalhes. DI — Injeção de Dependência — é entregar colaboradores de fora pelo construtor. Receber Email concreto já seria DI, mas manteria a dependência dessa implementação.",
+        "example": "No main: Notificador notificador = new WhatsApp(); depois new Matriculas(new PagamentoLocal(), notificador). Novo canal: OCP. Promessa de enviar ou sinalizar IOException prevista: LSP. ConsultaPagamento pequeno: ISP. Regra e envio separados: SRP. Contratos na política: DIP.",
+        "teachingCue": "Explique os nomes por extenso. Pergunte quem pede cada mudança, que contrato protege a regra e o que pode falhar legitimamente. Interface não garante comportamento nem resiliência."
+      },
+      {
+        "definition": "Um main independente estabelece a montagem e a entrada de um único experimento. Isso permite comparar poucas linhas mantendo claro qual variável mudou; um menu com vários cenários esconderia o fluxo que a professora precisa apontar.",
+        "mechanism": "Leia cada demo de cima para baixo: criar colaboradores, construir Matriculas, criar pedidos, chamar confirmar e observar os conjuntos de acessos e pendências. Rode pelo executar.sh da aula, que compila antes de executar.",
+        "example": "DemoEmail estabelece 3/3 com envio disponível. DemoAcoplamento falha antes do acesso; DemoDesacoplamento mantém acesso com aviso pendente. DemoWhatsApp troca o canal. DemoPagamentoPendente muda a condição do negócio e resulta em 0/3.",
+        "teachingCue": "Deixe as cinco abas prontas. Antes de cada execução, peça uma previsão e nomeie a variável alterada: disponibilidade, canal ou status do pagamento."
+      },
+      {
+        "definition": "Tolerância à falha depende do fluxo e do tratamento adotados. Um pagamento confirmado e um aviso indisponível podem produzir resultados diferentes conforme a ordem dos efeitos e o local onde a exceção é capturada.",
+        "mechanism": "MatriculasAcopladas chama email.enviar antes de acessos.add: IOException sai do método e impede a inclusão. Matriculas inclui o acesso primeiro, tenta enviar dentro de try e captura IOException, registrando a aluna em avisosPendentes.",
+        "example": "Com Ana, Bia e Clara confirmadas e Email(false), a primeira versão fica em 0/3; a segunda, 3/3 com três pendências. Os números vêm dos Sets, não de um resultado fixo colocado no terminal.",
+        "teachingCue": "Aponte a linha interrompida e a linha já realizada. Reforce que também seria possível tratar corretamente a falha na versão acoplada; uma interface sozinha não explica a continuidade."
+      },
+      {
+        "definition": "Substituir um colaborador por contrato permite variar um detalhe mantendo o consumidor válido. A abstração precisa corresponder à operação e à semântica que o consumidor espera; ter a mesma assinatura Java não é suficiente.",
+        "mechanism": "O main escolhe a implementação e a entrega ao construtor. Matriculas conhece Notificador.enviar, sem referenciar Email ou WhatsApp. O mesmo fluxo consulta pagamento, registra acesso e tenta avisar, independentemente da escolha concreta.",
+        "example": "Em DemoDesacoplamento, trocar Notificador notificador = new Email(false) por new WhatsApp() mantém o restante da montagem. O resultado esperado passa a 3/3 acessos e zero pendências, com mensagens locais de WhatsApp.",
+        "teachingCue": "Mude uma linha e execute novamente. Mostre que a regra não foi editada; explique que essas implementações simulam envio no terminal, sem rede ou mensagens reais."
+      }
+    ]
+  },
+  {
+    "id": "02-design-patterns",
+    "lessonNumber": 2,
+    "summary": "Distinguir criação, instância compartilhada, política de cálculo e adaptação de interface.",
+    "points": [
+      "Apresentar problema → padrão → custo: Factory cria, Singleton compartilha instância, Strategy troca política, Adapter traduz contrato.",
+      "Mostrar Dependency Injection na montagem explícita; escolher a estratégia sem espalhar condicionais pelo caso de uso.",
+      "Simple Factory não é o Factory Method clássico do GoF.",
+      "9000 centavos viram 90.00 reais no Adapter; sem conversão, SDK interpreta R$ 9000.",
+      "Singleton compartilha identidade nesta execução; não garante persistência ou thread safety."
+    ],
+    "scriptPath": "studio/audio/02-preparacao.txt",
+    "audioPath": "studio/audio/02-preparacao.mp3",
+    "audioStatus": "generated",
+    "durationSeconds": 228.806,
+    "generationSource": "ElevenLabs · Lucas · Eleven Multilingual v2 · arquivo anterior alinhado ao roteiro atual",
+    "originalDurationSeconds": 228.806,
+    "verification": "Duração medida com ffprobe; decodificação integral com FFmpeg; texto confrontado com roteiro/fontes. Sem escuta humana integral.",
+    "pointDetails": [
+      {
+        "definition": "Design pattern é uma solução recorrente de design em um contexto, com consequências e custos. Factory organiza criação; Singleton controla o acesso à mesma instância; Strategy separa algoritmos intercambiáveis; Adapter compatibiliza interfaces. Eles podem colaborar sem que um obrigue o uso dos outros.",
+        "mechanism": "Parta da mudança necessária: outro fornecedor, outra política de preço ou outro formato de integração. Localize a decisão no código antes de nomear o padrão. Contratos e objetos extras têm custo; uma condição simples pode continuar adequada.",
+        "example": "A escola vende um curso de 10_000 centavos. DescontoPix calcula 9_000; PagamentoFactory fornece o colaborador; Adapter converte para reais; RegistroCompras conta compras confirmadas nesta execução.",
+        "teachingCue": "Apresente preço, unidade e fornecedor simulado antes dos nomes de classes. Pergunte qual problema cada peça resolve e qual complexidade acrescenta."
+      },
+      {
+        "definition": "Dependency Injection, ou Injeção de Dependência, é fornecer colaboradores de fora em vez de o consumidor escolher ou criar internamente. Strategy organiza alternativas de comportamento. A injeção entrega a estratégia; ela não define o algoritmo nem implica automaticamente inversão de dependência.",
+        "mechanism": "DemoCompra cria DescontoPix, obtém Pagamento pela Factory e RegistroCompras pelo getter. Esses três objetos entram no construtor de Checkout, que os guarda nos campos. Comprar usa politicaPreco.calcular e pagamento.cobrar, sem buscar a Factory durante a compra.",
+        "example": "DemoSemDesconto troca a política para SemDesconto: a mesma entrada 10_000 passa a produzir 10_000, mantendo o fornecedor legado. Checkout continua usando o contrato PoliticaPreco.",
+        "teachingCue": "Leia a montagem e depois o método comprar. Diferencie “quem fornece o objeto” de “quem calcula”. Receber RegistroCompras concreto ainda acopla ao tipo desse registro."
+      },
+      {
+        "definition": "Simple Factory centraliza seleção e construção em um método que retorna um produto. Factory Method, no padrão clássico descrito por Gamma, Helm, Johnson e Vlissides, oferece um ponto de criação especializado por subclasses. Abstract Factory cria famílias relacionadas; esses dois últimos não são implementados aqui.",
+        "mechanism": "PagamentoFactory.criar usa switch sobre Fornecedor. O ponto central conhece os construtores concretos e entrega um Pagamento. O new não desapareceu: foi concentrado para o consumidor receber o colaborador pronto.",
+        "example": "LEGADO retorna new PagamentoLegadoAdapter(new SdkLegado()); LOCAL retorna new PagamentoLocal(). Acrescentar uma opção neste switch exige alterar a Factory, embora Checkout possa continuar preservado.",
+        "teachingCue": "Abra a Factory por dentro e aponte os dois new. Não classifique qualquer método estático de criação como Factory Method nem prometa criação extensível sem alterações."
+      },
+      {
+        "definition": "Adapter oferece a interface esperada pelo cliente traduzindo para uma interface existente diferente. A tradução deve preservar significado: centavos inteiros e reais como texto representam a mesma quantia com unidades e tipos distintos.",
+        "mechanism": "PagamentoLegadoAdapter.cobrar transforma valorCentavos com BigDecimal.valueOf(valorCentavos, 2).toPlainString(), chama sdk.charge(valorReais, \"BRL\") e converte o retorno com movePointRight(2).intValueExact(). Checkout não conhece o formato do SDK.",
+        "example": "Em DemoSemAdapter, Integer.toString(9000) produz \"9000\", interpretado como R$ 9.000. Com Adapter, 9000 produz \"90.00\": R$ 90, confirmado de volta como 9000 centavos.",
+        "teachingCue": "Peça previsão para as mesmas entradas antes de executar. A conversão correta resolve a unidade; o Adapter organiza onde a tradução mora. Tudo é simulado localmente."
+      },
+      {
+        "definition": "Singleton faz a própria classe controlar a construção e fornecer acesso à mesma instância naquele contexto de execução. Identidade compartilhada significa duas referências para um objeto; não significa duas cópias que sincronizam seus valores.",
+        "mechanism": "RegistroCompras tem construtor privado, campo static final INSTANCIA e getInstance retornando esse campo. Registrar incrementa quantidade. A inicialização de classe é coordenada pela JVM, mas quantidade++ não se torna uma operação concorrente segura por isso.",
+        "example": "DemoSingleton fornece o mesmo registro a dois checkouts. registroAna == registroBia resulta true; após as duas compras, ambos leem 2. Novo comando Java inicia outra JVM e outro contador.",
+        "teachingCue": "Desenhe um objeto e duas referências, depois 0 → 1 → 2. Ressalte perda no reinício, ausência de unicidade entre processos e possibilidade de compartilhar uma classe comum por injeção."
+      }
+    ]
+  },
+  {
+    "id": "03-clean-architecture-hexagonal",
+    "lessonNumber": 3,
+    "summary": "Preservar a regra ao trocar armazenamento e entrada; explicar dependências e portas.",
+    "points": [
+      "Clean: regra de dependência aponta para dentro; entidades e casos de uso não dependem de framework ou banco.",
+      "Hexagonal: portas são contratos; adapters de entrada acionam a aplicação e adapters de saída realizam integrações.",
+      "Apresentar fundamentos gerais antes de contextualizar escola e nomes de classes.",
+      "Clean: memória nova fica vazia; arquivo novo objeto recupera Ana e Clara.",
+      "Hexagonal: Bia continua recusada no CSV; comandos de terminal não acumulam memória."
+    ],
+    "scriptPath": "studio/audio/03-preparacao.txt",
+    "audioPath": "studio/audio/03-preparacao.mp3",
+    "audioStatus": "generated",
+    "durationSeconds": 229.552,
+    "generationSource": "ElevenLabs · Rodrigo Souzax — Educational Friendly · Eleven Multilingual v2 · conta contato@fernandakipper.com verificada",
+    "originalDurationSeconds": 229.552,
+    "verification": "Duração medida com ffprobe; decodificação integral com FFmpeg; texto confrontado com roteiro/fontes. Sem escuta humana integral.",
+    "pointDetails": [
+      {
+        "definition": "Clean Architecture separa políticas de negócio de mecanismos externos. Entidades representam conceitos e comportamento do domínio; casos de uso coordenam intenções da aplicação; adaptadores traduzem formatos; frameworks e drivers ficam na borda. A regra de dependência orienta o conhecimento de tipos para dentro.",
+        "mechanism": "Pedido decide permiteMatricula. MatricularAluno coordena a decisão e chama RepositorioMatriculas. O caso de uso importa domínio e contrato de aplicação, sem Files, Path ou implementação concreta de armazenamento. RepositorioEmArquivo conhece o contrato interno e os mecanismos externos.",
+        "example": "Trocar RepositorioEmMemoria por RepositorioEmArquivo muda o adaptador e a montagem, preservando a condição de pagamento. Apenas mover uma classe para uma pasta chamada dominio não alteraria seus imports.",
+        "teachingCue": "Aponte dependência de código separadamente da chamada em execução. A chamada chega ao arquivo; o núcleo continua sem conhecer sua implementação."
+      },
+      {
+        "definition": "Arquitetura Hexagonal, ou Ports and Adapters, separa núcleo e exterior por conversas explícitas. Porta de entrada descreve o que a aplicação oferece; porta de saída descreve o que ela precisa de um colaborador. Adaptadores traduzem tecnologias para essas conversas; não são as regras do negócio.",
+        "mechanism": "EntradaTerminal e EntradaCsv chamam Matricular.executar, implementado por MatricularAluno. Esse caso de uso chama RepositorioMatriculas para salvar. Memória e arquivo atendem à necessidade de saída, sem impor seu formato ao domínio.",
+        "example": "O CSV transforma linha, campos e status em uma chamada da aplicação. O repositório de arquivo transforma salvar/listar em operações de filesystem. Ambos podem ser trocados independentemente.",
+        "teachingCue": "Pergunte quem inicia cada conversa. Entrada e saída não significam dados só em um sentido: uma porta de saída também retorna resultados. Hexágono não exige seis portas."
+      },
+      {
+        "definition": "O modelo arquitetural precisa ser compreendido antes dos nomes específicos do exemplo. Política descreve o que o negócio permite; mecanismo descreve como uma tecnologia realiza uma operação. Essa distinção permite reconhecer a mesma arquitetura em outra aplicação.",
+        "mechanism": "Apresente entidades, coordenação, tradução e tecnologias. Depois situe a escola: recebe nome e status de pagamento, registrando apenas confirmados. Associe os conceitos às classes somente quando atores, entrada, regra e resultado estiverem claros.",
+        "example": "Pedido contém a elegibilidade; MatricularAluno coordena; Matricular e RepositorioMatriculas nomeiam conversas; terminal, CSV, memória e arquivo realizam traduções e mecanismos.",
+        "teachingCue": "Abra com definição e objetivo. Relembre Ana e Clara confirmadas, Bia pendente. Não trate entidade como sinônimo obrigatório de tabela ou caso de uso como simples nome de pasta."
+      },
+      {
+        "definition": "Persistência significa conservar dados além da vida do objeto ou processo que os produziu, segundo as garantias do armazenamento. Uma coleção de instância em memória e um arquivo externo têm vidas úteis diferentes; a interface de repositório não produz durabilidade por si mesma.",
+        "mechanism": "RepositorioEmMemoria mantém sua própria coleção. Outra instância cria outra coleção vazia. RepositorioEmArquivo escreve e lê o mesmo caminho externo, permitindo recuperar as linhas ao construir outro objeto que aponta para esse arquivo.",
+        "example": "DemoCleanMemoria salva [Ana, Clara], mas a nova instância lista []. DemoCleanArquivo salva os mesmos nomes e a nova instância recupera [Ana, Clara]; Bia é rejeitada antes de salvar.",
+        "teachingCue": "Abra o arquivo real e compare as montagens. Prepare a saída limpa para não acumular linhas de ensaios; esse arquivo didático não demonstra transação, concorrência ou banco de produção."
+      },
+      {
+        "definition": "Um adaptador de entrada traduz dados e chama o caso de uso, sem implementar uma segunda regra de matrícula. Rejeição de negócio é diferente de erro de leitura: uma linha pode ter formato válido e ainda representar uma aluna inelegível.",
+        "mechanism": "EntradaCsv separa duas colunas por ponto e vírgula, converte o status para enum e chama Matricular.executar. MatricularAluno cria Pedido e retorna false quando permiteMatricula é falso, antes de chamar salvar. O mesmo caminho decide para terminal e CSV.",
+        "example": "Ana e Clara entram no lote; Bia PENDENTE permanece recusada. Cada comando hex-terminal cria um processo e repositório em memória novos, portanto suas listas não acumulam entre invocações.",
+        "teachingCue": "Reconstrua o caminho de Bia até o retorno antecipado. O leitor CSV é específico, sequencial e não atômico; não é um importador genérico com rollback de todo o lote."
+      }
+    ]
+  },
+  {
+    "id": "04-monolito-modular",
+    "lessonNumber": 4,
+    "summary": "Separar módulos e donos dos dados; observar a fronteira de uma transação local.",
+    "points": [
+      "Monólito descreve uma unidade de implantação; modularidade descreve limites internos, contratos e dependências permitidas.",
+      "Cada módulo controla seus dados; atravessar a fronteira por contrato evita acoplamento ao detalhe interno.",
+      "Java mostra módulos; Python/SQLite executa transação real e efêmera.",
+      "Autocommit mantém recebimento de Bia; rollback o remove com a mesma falha UNIQUE.",
+      "Rollback local não estorna cobrança HTTP externa."
+    ],
+    "scriptPath": "studio/audio/04-preparacao.txt",
+    "audioPath": "studio/audio/04-preparacao.mp3",
+    "audioStatus": "generated",
+    "durationSeconds": 237.122,
+    "generationSource": "ElevenLabs · Rodrigo Souzax — Educational Friendly · Eleven Multilingual v2 · conta contato@fernandakipper.com verificada",
+    "originalDurationSeconds": 237.122,
+    "verification": "Duração medida com ffprobe; decodificação integral com FFmpeg; texto confrontado com roteiro/fontes. Sem escuta humana integral.",
+    "pointDetails": [
+      {
+        "definition": "Monólito descreve implantação conjunta da aplicação como uma unidade. Modularidade descreve fronteiras lógicas por capacidades de negócio, com responsabilidades, contratos e dependências permitidas. Uma aplicação pode ter vários módulos, várias réplicas e banco externo mantendo um único deploy.",
+        "mechanism": "Financeiro concentra confirmação de pedidos; Acadêmico decide matrículas usando uma operação pública de Financeiro. Camadas técnicas como controller e repository podem existir dentro dos módulos, mas não são por si só capacidades de negócio.",
+        "example": "DemoModulos cria Cobrancas, injeta em Matriculas, confirma apenas pedido-ana e solicita Ana e Bia. O resultado [Ana] vem da consulta ao contrato local; não existe serviço de rede.",
+        "teachingCue": "Pergunte se separar pastas exige separar processos. Pastas sozinhas não impedem ciclos ou acesso indevido; a demo evidencia um limite específico, não proteção arquitetural completa."
+      },
+      {
+        "definition": "Dono dos dados é o módulo responsável por manter suas invariantes e controlar alterações. Consumidores devem usar capacidades públicas em vez de conhecer ou modificar diretamente estruturas internas. Isso reduz dependência do layout, sem eliminar o acoplamento ao contrato escolhido.",
+        "mechanism": "Cobrancas guarda confirmadas em um Set privado e expõe estaConfirmado(pedido), retornando boolean. Acadêmico usa essa informação para decidir. Receber o conjunto mutável permitiria alterar confirmações sem passar pelas regras de Financeiro.",
+        "example": "Matriculas não recebe acesso ao Set; sua listagem devolve cópia imutável. No SQL, financeiro_recebimentos e academico_matriculas documentam donos, mas os prefixos não criam permissões automaticamente.",
+        "teachingCue": "Aponte o private e a resposta curta. Diferencie contrato concreto desta demo de isolamento completo por módulos, schemas ou credenciais de banco; esses mecanismos exigiriam configuração adicional."
+      },
+      {
+        "definition": "Uma demonstração pode isolar mecanismos diferentes sem fingir que eles já estão integrados. A demo Java evidencia fronteiras e visibilidade; a demo SQLite evidencia uma transação executada pelo banco. O limite da linguagem não define o conceito arquitetural.",
+        "mechanism": "DemoModulos usa coleções em memória. transacao.py abre SQLite :memory: com autocommit explícito, carrega estrutura.sql e executa as duas escritas. Python fornece apenas o driver da biblioteca padrão, evitando baixar JDBC; o banco é real, mas efêmero.",
+        "example": "Os modos modulos, sem-transacao e com-transacao do executar.sh são experimentos separados. A primeira execução não usa SQLite; cada execução SQL inicia um banco novo com a situação original de Ana.",
+        "teachingCue": "Mostre apenas o trecho BEGIN, INSERTs e COMMIT/ROLLBACK. Não atribua ao Java uma garantia de banco que só foi demonstrada pelo segundo experimento."
+      },
+      {
+        "definition": "Autocommit confirma cada instrução de forma independente. Uma transação explícita agrupa alterações numa unidade que confirma com COMMIT ou desfaz alterações ainda não confirmadas com ROLLBACK. Dois INSERTs no mesmo método não são automaticamente uma unidade atômica.",
+        "mechanism": "Ana já ocupa a vaga 1 antes do experimento. Inserir recebimento de Bia funciona; inserir sua matrícula na mesma vaga viola UNIQUE. Sem BEGIN, o recebimento já confirmou. Com BEGIN, a exceção leva ao rollback da tentativa de Bia.",
+        "example": "Sem transação: recebimentos pedido-ana e pedido-bia, matrícula Ana. Com transação: recebimento pedido-ana e matrícula Ana. Os dados preexistentes de Ana permanecem; apenas a nova unidade é desfeita.",
+        "teachingCue": "Mantenha entrada e falha iguais e pergunte qual escrita já estava confirmada. Explique atomicidade local; a demo não mede isolamento concorrente ou durabilidade em disco."
+      },
+      {
+        "definition": "Rollback desfaz alterações participantes de uma transação local ainda não confirmada. Ele não reverte automaticamente efeitos feitos em outro banco ou numa API externa, porque esses participantes têm seus próprios limites de confirmação e protocolos.",
+        "mechanism": "Uma chamada HTTP ao provedor pode confirmar cobrança antes de a matrícula falhar no banco da escola. ROLLBACK na conexão SQLite não alcança o estado do provedor. Uma ação compensatória, como solicitar estorno, seria outra operação, com falhas e acompanhamento próprios.",
+        "example": "O recebimento de Bia na demo é uma linha fictícia local. Sua remoção pelo rollback não comprova cancelamento de uma cobrança real; não houve comunicação com provedor.",
+        "teachingCue": "Desenhe o limite do banco e o provedor fora dele. Pergunte quais efeitos participam do mesmo commit; use a distinção para preparar falhas parciais e compensação nas próximas aulas."
+      }
+    ]
+  },
+  {
+    "id": "05-localhost-producao",
+    "lessonNumber": 5,
+    "summary": "Seguir endereço, porta e processo; distinguir execução local, container e produção.",
+    "points": [
+      "Distinguir processo, servidor, máquina virtual, imagem e container; localhost é relativo ao contexto de rede.",
+      "Produção exige configuração, acesso pela rede, persistência, saúde e operação; seguir a requisição do cliente até o processo.",
+      "Reiniciar volta visitas a 1; duas portas escolhidas manualmente não são balanceamento.",
+      "EXPOSE documenta; publicação mapeia portas; Docker Linux no Mac usa VM Linux.",
+      "Docker build/run precisa de ensaio; não confundir HTTP local com deploy público."
+    ],
+    "scriptPath": "studio/audio/05-preparacao.txt",
+    "audioPath": "studio/audio/05-preparacao.mp3",
+    "audioStatus": "generated",
+    "durationSeconds": 239.583,
+    "generationSource": "ElevenLabs · Rodrigo Souzax — Educational Friendly · Eleven Multilingual v2 · conta contato@fernandakipper.com verificada",
+    "originalDurationSeconds": 239.583,
+    "verification": "Duração medida com ffprobe; decodificação integral com FFmpeg; texto confrontado com roteiro/fontes. Sem escuta humana integral.",
+    "pointDetails": [
+      {
+        "definition": "Processo é uma execução com memória e recursos próprios. Servidor pode designar a máquina ou o processo que atende. Máquina virtual tem sistema operacional convidado; imagem é um pacote de inicialização; container é uma execução isolada. Localhost identifica o próprio contexto de rede de quem chama.",
+        "mechanism": "Servidor.java cria HttpServer em HOST e PORT. Uma requisição precisa alcançar esse endereço, uma porta escutada e o handler correto. HOST padrão 127.0.0.1 restringe a escuta local; 0.0.0.0 aceita interfaces do ambiente, não é um endereço de destino do cliente.",
+        "example": "A aluna consultar 127.0.0.1:8080 procura um processo no ambiente dela, não o computador da professora. Docker Linux no Mac roda sobre ambiente Linux virtualizado.",
+        "teachingCue": "Separe código, execução e ambiente no desenho. Pergunte onde o cliente está antes de interpretar localhost; não confunda container com uma máquina virtual completa."
+      },
+      {
+        "definition": "Deploy disponibiliza e opera uma versão em um ambiente acessível aos usuários. Iniciar Java é uma etapa; acesso público, configuração, observação e continuidade operacional exigem decisões adicionais. Persistência é necessária para dados que precisam sobreviver ao processo, não uma propriedade automática de publicar.",
+        "mechanism": "Siga nome do serviço, resolução DNS, acesso por HTTPS e roteamento até a aplicação. Configure runtime, rede e valores de ambiente, observe logs e saúde, teste a versão e planeje retorno. O endpoint /health desta demo apenas responde; não verifica banco ou dependências.",
+        "example": "A página /curso local responde nome da instância e visitas. Isso comprova HTTP no ambiente testado, sem demonstrar publicação na internet, armazenamento durável ou operação de um ambiente completo.",
+        "teachingCue": "Pergunte onde a requisição pode parar. Relacione cada etapa a uma evidência observável, evitando tratar imagem criada ou handler saudável como deploy público concluído."
+      },
+      {
+        "definition": "Estado local pertence à memória de uma execução. Reiniciar recria os objetos e pode perder esse estado. Duas execuções independentes não compartilham automaticamente seus contadores; selecionar manualmente uma porta não implementa balanceamento de carga.",
+        "mechanism": "Servidor.java instancia AtomicInteger com zero. Cada /curso executa incrementAndGet, portanto a primeira resposta mostra 1. Parar e iniciar o processo cria outro contador. INSTANCE identifica a resposta, enquanto PORT permite escutas separadas.",
+        "example": "A na porta 8080 pode ter visitas 2 enquanto B em 8081 inicia em 1. Após restart de A, sua próxima visita volta a 1, mesmo se B continuar rodando.",
+        "teachingCue": "Peça previsão antes do restart. A causa é a nova memória do processo, não cache do navegador; o cliente escolheu 8080 ou 8081 diretamente, sem um balanceador."
+      },
+      {
+        "definition": "Imagem define o pacote; container executa esse pacote. EXPOSE documenta uma porta pretendida, mas não cria seu acesso no host. Publicar uma porta mapeia endereço e porta externos para a porta do processo dentro do ambiente do container.",
+        "mechanism": "No Dockerfile, HOST=0.0.0.0 e PORT=8080 permitem a escuta nas interfaces internas. O argumento -p 127.0.0.1:8081:8080 publica 8081 localmente e encaminha para 8080 interna. A publicação continua restrita ao computador pelo endereço 127.0.0.1.",
+        "example": "curl http://127.0.0.1:8081/curso chega à aplicação do container na porta 8080 quando o container está rodando e a publicação foi configurada.",
+        "teachingCue": "Aponte os dois números e o caminho. No Mac, containers Linux compartilham kernel do ambiente Linux usado pelo Docker Desktop, não diretamente o kernel Darwin do macOS."
+      },
+      {
+        "definition": "Build produz um artefato; run cria uma execução a partir dele. Verificar uma dessas etapas não comprova a outra. Ensaiar significa executar os comandos reais e observar respostas no ambiente disponível, inclusive dependências de runtime e rede do primeiro build.",
+        "mechanism": "O Dockerfile usa estágio JDK 21 para javac e copia as classes para estágio JRE 21. ENTRYPOINT inicia Servidor; USER 10001:10001 evita executar como root. O runtime precisa estar disponível, a imagem base pode precisar de download e a porta publicada deve estar livre.",
+        "example": "Pare B se ela ocupa 8081 antes do docker run. Faça curl em outro terminal, porque o terminal do container continua ocupado. O bloco HTTP direto permanece independente do Docker.",
+        "teachingCue": "Confirme o estado do daemon e ensaie antes de gravar. Registre saída real; um teste local de container não constitui por si só serviço público disponível."
+      }
+    ]
+  },
+  {
+    "id": "06-sistemas-escalaveis",
+    "lessonNumber": 6,
+    "summary": "Escolher técnicas por gargalo e observar economia, estado e limites.",
+    "points": [
+      "Medir o gargalo antes de escalar; distinguir aumento de recursos da máquina e multiplicação de réplicas.",
+      "Separar cache, CDN, balanceamento e rate limiting: cada técnica resolve uma pressão e introduz um custo.",
+      "Cinco consultas versus uma; preço antigo permanece até invalidar, então origem totaliza duas.",
+      "Réplicas modeladas como objetos JVM, sem Redis/CDN/load balancer implantados.",
+      "Limite por chave e janela: três de Ana, cota própria de Bia, renovação em t=60."
+    ],
+    "scriptPath": "studio/audio/06-preparacao.txt",
+    "audioPath": "studio/audio/06-preparacao.mp3",
+    "audioStatus": "generated",
+    "durationSeconds": 235.009,
+    "generationSource": "ElevenLabs · Rodrigo Souzax — Educational Friendly · Eleven Multilingual v2 · conta contato@fernandakipper.com verificada",
+    "tempoAdjustment": 1.05033,
+    "originalDurationSeconds": 246.828,
+    "verification": "Duração medida com ffprobe; decodificação integral com FFmpeg; texto confrontado com roteiro/fontes. Sem escuta humana integral.",
+    "pointDetails": [
+      {
+        "definition": "Escalar é sustentar mais carga dentro dos objetivos de serviço. Escala vertical aumenta recursos de uma instância; horizontal distribui trabalho entre instâncias. O benefício depende de onde está o recurso saturado e de quanto do trabalho pode ser distribuído.",
+        "mechanism": "Observe volume de requisições, latência, erros e utilização dos recursos. Se réplicas web passam todas as consultas ao mesmo banco, multiplicá-las pode aumentar a pressão na origem. Uma técnica deve reduzir trabalho ou ampliar capacidade do gargalo identificado.",
+        "example": "A demo de catálogo conta cinco consultas iguais na origem sem cache e uma com cache. Ela mede número de operações, sem medir duração nem provar ganho percentual de desempenho.",
+        "teachingCue": "Pergunte “qual recurso está caro ou saturado?” antes de propor réplicas. Preserve objetivos e carga comparável; contador de acessos não equivale a benchmark de latência."
+      },
+      {
+        "definition": "Cache reutiliza uma cópia e pode servir dado antigo. CDN, rede de distribuição de conteúdo, aproxima conteúdo dos clientes conforme regras de cache. Balanceamento distribui pedidos entre alvos. Rate limiting limita admissões por chave e intervalo. Cada técnica atua sobre uma pressão diferente.",
+        "mechanism": "Cache reduz consultas à origem; CDN pode reduzir viagens e tráfego de conteúdo público; balanceador distribui trabalho sem remover necessariamente o gargalo compartilhado; limitador reduz excesso aceito sem criar capacidade nova. Todos exigem política para estado, falha ou atualização.",
+        "example": "A imagem pública do curso pode ir à CDN; sessão privada não deve virar cache público; a compra pode exigir preço atual na origem. CachePreco e LimitePorJanela modelam apenas dois desses mecanismos.",
+        "teachingCue": "Peça técnica, recurso poupado e custo novo. Não apresente CDN ou balanceador como implantados: eles são conceituais nesta aula, enquanto o Java é local."
+      },
+      {
+        "definition": "Cache guarda uma cópia reutilizável da origem. Miss significa ausência de cópia e exige consulta; hit reutiliza o valor existente. Alterar a origem não atualiza automaticamente a cópia, a menos que uma política de atualização ou invalidação cuide dessa mudança.",
+        "mechanism": "CachePreco consulta Catalogo somente quando seu valor ainda não foi preenchido. Catalogo incrementa o contador de consultas na própria operação. Invalidar remove a cópia e força a próxima leitura a buscar o valor da origem.",
+        "example": "Cinco leituras geram cinco consultas sem cache e uma com cache. Origem passa de 10000 para 12000; cache ainda retorna 10000. Após invalidar, retorna 12000 e a contagem da origem chega a duas.",
+        "teachingCue": "Mostre economia e desatualização como consequências do mesmo mecanismo. Não cite TTL implementado: aqui a política demonstrada é invalidação explícita, sem espera de tempo."
+      },
+      {
+        "definition": "Stateless significa que uma réplica não depende do estado local de sessão criado por pedidos anteriores para atender ao próximo. O sistema ainda mantém estado, mas precisa de uma representação ou armazenamento acessível aos participantes apropriados. Afinidade de sessão é outra escolha, com dependência da réplica.",
+        "mechanism": "DemoEstadoLocal fornece um objeto Sessoes diferente a cada Replica. Login salva Ana em A, mas B consulta sua própria coleção vazia. DemoEstadoCompartilhado injeta a mesma instância de Sessoes em ambos os objetos, isolando a causa lógica.",
+        "example": "No primeiro resultado, A encontra Ana e B fica SEM SESSÃO; no segundo, ambas encontram Ana. As réplicas são objetos na mesma JVM, sem processos remotos ou Redis.",
+        "teachingCue": "Pergunte o que acontece quando o pedido seguinte chega a B. Em produção, armazenamento entre processos acrescenta latência, expiração, disponibilidade e segurança; compartilhar um objeto Java não implementa isso."
+      },
+      {
+        "definition": "Rate limiting controla quantas operações uma chave pode admitir em um intervalo. Na janela fixa, todas as chaves compartilham fronteiras de tempo, mas mantêm contagens próprias. O limitador protege capacidade; não aumenta a capacidade e pode permitir rajadas perto da virada da janela.",
+        "mechanism": "LimitePorJanela calcula segundo / 60. Quando a janela muda, limpa as contagens. Para a chave cliente, permite enquanto usadas < limite e incrementa apenas a chamada aceita. O tempo chega como argumento, tornando a demo reproduzível.",
+        "example": "Ana passa nas primeiras três chamadas; quarta e quinta são recusadas. Bia tem sua própria cota. Em t=60, Ana volta a passar. Duas instâncias do limitador manteriam duas cotas independentes.",
+        "teachingCue": "Aponte chave, janela e contador. O método retorna boolean; o adaptador HTTP poderia traduzir recusa para 429. O mapa local sequencial não é um limite distribuído global."
+      }
+    ]
+  },
+  {
+    "id": "07-monolito-vs-microservicos",
+    "lessonNumber": 7,
+    "summary": "Comparar autonomia de implantação com falhas parciais e custo de distribuição.",
+    "points": [
+      "Comparar unidade de deploy, propriedade dos dados e autonomia das equipes; serviços trazem custo de rede e operação.",
+      "Explicar falha parcial e transação local por banco; decidir a arquitetura por necessidades concretas, sem hierarquia de maturidade.",
+      "Timeout mantém cliente UNKNOWN; o provedor pode já ter aplicado o efeito.",
+      "Retry sem identidade produz duas cobranças; mesma chave idempotente produz uma.",
+      "Simulação local sequencial não oferece idempotência financeira durável."
+    ],
+    "scriptPath": "studio/audio/07-preparacao.txt",
+    "audioPath": "studio/audio/07-preparacao.mp3",
+    "audioStatus": "generated",
+    "durationSeconds": 235.0,
+    "generationSource": "ElevenLabs · Rodrigo Souzax — Educational Friendly · Eleven Multilingual v2 · conta contato@fernandakipper.com verificada",
+    "tempoAdjustment": 1.02504,
+    "originalDurationSeconds": 240.884,
+    "verification": "Duração medida com ffprobe; decodificação integral com FFmpeg; texto confrontado com roteiro/fontes. Sem escuta humana integral.",
+    "pointDetails": [
+      {
+        "definition": "A decisão compara fronteiras de implantação e de negócio. Monólito implanta componentes juntos; microserviços permitem evolução e implantação independente por capacidades e contratos. Propriedade dos dados e autonomia das equipes precisam acompanhar essas fronteiras para que a independência tenha valor.",
+        "mechanism": "Separar processos introduz transporte, compatibilidade, observabilidade e falhas parciais. Se mudanças continuam coordenadas em todos os serviços ou consumidores escrevem diretamente nas tabelas alheias, parte do benefício de autonomia pode desaparecer.",
+        "example": "Uma equipe pequena que muda matrícula e cobrança juntas pode escolher um monólito modular. Processamento de vídeos com escala e evolução próprias pode justificar separação. Réplicas do mesmo monólito não viram microserviços.",
+        "teachingCue": "Peça uma necessidade concreta de implantação ou escala independente. Compare o benefício com o custo operacional, sem chamar uma arquitetura de estágio obrigatório de maturidade."
+      },
+      {
+        "definition": "Falha parcial acontece quando uma etapa ou participante falha enquanto outro já executou sua parte. Cada banco tem um limite de transação local; confirmar ou desfazer ali não coordena automaticamente commits de outros bancos ou efeitos externos.",
+        "mechanism": "Uma cobrança pode confirmar no provedor e a resposta não chegar ao checkout. Uma matrícula posterior pode falhar no banco local sem desfazer a cobrança. O desenho precisa admitir estados intermediários, consulta de reconciliação e coordenação explícita conforme a regra de negócio.",
+        "example": "O mesmo monólito que chama uma API externa pode sofrer essa falha. O risco vem da fronteira remota, não do nome microserviço. As demos isolam o efeito confirmado seguido de resposta perdida.",
+        "teachingCue": "Desenhe cada fronteira de commit. Pergunte qual participante sabe o quê e que estado é aceitável para o negócio, antes de escolher a forma de distribuição."
+      },
+      {
+        "definition": "Timeout informa que o cliente não recebeu uma confirmação dentro do prazo; não informa sozinho se o efeito aconteceu. UNKNOWN representa essa incerteza de conhecimento do cliente. É diferente de recusa explícita pelo provedor.",
+        "mechanism": "Provedor.cobrar registra o pedido na lista antes de lançar TimeoutException quando a resposta é perdida. O experimento conhece essa ordem, mas um cliente real só observa ausência de resposta. Ele deve consultar ou repetir com a identidade apropriada, conforme o contrato remoto.",
+        "example": "DemoRetry mostra UNKNOWN na primeira chamada enquanto a coleção do provedor já contém uma cobrança. Repetir sem proteção aplica outra cobrança; capturar a exceção não desfaz a primeira.",
+        "teachingCue": "Peça “timeout prova pagamento recusado?” e espere a resposta. A mensagem controlada da demo revela a causa didática; não é uma informação disponível por qualquer timeout real."
+      },
+      {
+        "definition": "Idempotência permite repetir a mesma intenção sem reaplicar seu efeito. Uma chave estável identifica a operação, e seus parâmetros precisam continuar compatíveis. Uma chave nova pode representar uma nova intenção, mesmo se a pessoa e o produto parecerem iguais.",
+        "mechanism": "ProvedorIdempotente guarda chave e valor no Map. Se a chave existe com outro valor, rejeita o conflito. putIfAbsent evita nova entrada para a mesma chave; a tentativa pode perder a resposta depois do registro e ser consultada/repetida sem aumentar a quantidade.",
+        "example": "DemoRetry termina com duas cobranças. DemoIdempotencia reutiliza pedido-ana e termina com uma: primeira resposta desconhecida, segunda confirmada. Manter a chave e trocar 10000 por 12000 gera conflito.",
+        "teachingCue": "Compare identidade, efeito e resposta. A diferença vem do registro da operação; interfaces, try/catch ou o nome do padrão não tornam uma cobrança automaticamente idempotente."
+      },
+      {
+        "definition": "Uma garantia durável precisa sobreviver a reinícios e coordenar participantes concorrentes. O mapa local da demo só demonstra o raciocínio em uma thread. Ele não conserva resultados entre processos nem protege sozinho a aplicação financeira distribuída.",
+        "mechanism": "Em uma implementação real, chave, parâmetros, efeito e resultado precisam de armazenamento e coordenação adequados, incluindo unicidade, atomicidade, retenção e recuperação. O cliente também deve preservar a identidade entre suas tentativas; para efeito externo, dependem as garantias do destino.",
+        "example": "Reiniciar ProvedorIdempotente cria outro Map e perde o histórico. Várias réplicas com mapas próprios não reconhecem automaticamente a cobrança feita por outra. A demonstração não executa HTTP ou espera um timeout real.",
+        "teachingCue": "Declare esse limite antes da execução e aponte o estado em memória. Diferencie “mostramos uma regra de deduplicação” de “implementamos idempotência financeira de produção”."
+      }
+    ]
+  },
+  {
+    "id": "08-arquitetura-assincrona",
+    "lessonNumber": 8,
+    "summary": "Localizar perda e repetição entre gravação, publicação, consumo e ACK.",
+    "points": [
+      "Distinguir comando de evento; fila desacopla o momento do produtor e consumidor, mas exige política de entrega.",
+      "Explicar ACK, redelivery, retry com limite e DLQ; Saga compensa efeitos já confirmados, não faz rollback global.",
+      "Outbox preserva intenção local; publicação ainda pode repetir.",
+      "Efeito antes de ACK produz [Ana, Ana]; ID processado evita repetição na demo.",
+      "Demos em memória e SQL-modelo não são broker nem recuperação durável; Saga é compensação."
+    ],
+    "scriptPath": "studio/audio/08-preparacao.txt",
+    "audioPath": "studio/audio/08-preparacao.mp3",
+    "audioStatus": "generated",
+    "durationSeconds": 239.119,
+    "generationSource": "ElevenLabs · Rodrigo Souzax — Educational Friendly · Eleven Multilingual v2 · conta contato@fernandakipper.com verificada",
+    "originalDurationSeconds": 239.119,
+    "verification": "Duração medida com ffprobe; decodificação integral com FFmpeg; texto confrontado com roteiro/fontes. Sem escuta humana integral.",
+    "pointDetails": [
+      {
+        "definition": "Comando pede uma ação; evento informa um fato ocorrido. Uma fila permite que produtor e consumidor atuem em momentos diferentes, conforme garantias de armazenamento, entrega e confirmação. Isso muda a coordenação temporal, sem eliminar contratos ou garantir mais velocidade.",
+        "mechanism": "O produtor publica trabalho; o worker obtém uma mensagem, realiza um efeito e confirma. Se a chegada supera o processamento, acumula backlog. Consumidores concorrentes normalmente dividem o trabalho de uma fila; consumidores independentes de um fato exigem topologia de distribuição adequada.",
+        "example": "EnviarAviso expressa intenção; MatriculaConfirmada expressa fato. Na história, Ana pode ter acesso enquanto seu aviso ainda espera processamento. Evento carrega ID para acompanhar a mesma ocorrência.",
+        "teachingCue": "Pergunte se a mensagem pede algo ou anuncia algo concluído. Explique quem aceita o estado intermediário; apenas colocar consumidores na mesma fila não implica broadcast."
+      },
+      {
+        "definition": "ACK é a confirmação do consumidor de que uma entrega pode ser encerrada segundo o contrato do broker. Redelivery é nova entrega quando falta essa confirmação. Retry repete após falha; DLQ, fila de mensagens não processadas, separa casos que excederam uma política para investigação e tratamento.",
+        "mechanism": "Confirmar antes do efeito pode perder trabalho; efeito antes do ACK pode repetir se a confirmação se perder. Use atraso e limite para falhas transitórias; dados inválidos não melhoram com repetição infinita. Saga coordena transações locais com compensações para efeitos já confirmados.",
+        "example": "O roteiro ilustra três tentativas e depois DLQ. No cenário de Saga, reserva aceita e cobrança recusada levam a liberar reserva: uma nova ação que também pode falhar, não rollback global.",
+        "teachingCue": "Distinga ACK de consumidor e confirmação produtor→broker. Pergunte qual etapa foi confirmada. Retry/DLQ/Saga são explicados conceitualmente, sem implementação completa nessas demos."
+      },
+      {
+        "definition": "Transactional Outbox registra a mudança de negócio e a intenção de publicar na mesma transação local. Um relay, ou publicador, envia as pendências ao broker depois. Essa coordenação protege a intenção; não transforma publicação remota e commit local em uma única operação atômica.",
+        "mechanism": "Salvar matrícula e publicar separadamente abre uma janela de perda. Com outbox, falha antes do envio deixa pendência recuperável. Se o relay publicar e falhar antes de marcar envio, poderá publicar de novo; o consumidor precisa aceitar repetição corretamente.",
+        "example": "DemoEventoPerdido salva Ana e deixa fila vazia. DemoOutbox cria Estado com matrícula e evento, depois publica. A demo não marca a pendência enviada: rodar o loop novamente publicaria o evento outra vez.",
+        "teachingCue": "Siga commit local, pendência, publicação e marcação. O novo Estado em memória modela a gravação conjunta sequencial; não é uma tabela durável nem uma transação real de banco."
+      },
+      {
+        "definition": "O efeito e a confirmação são etapas diferentes. Se um worker aplica o efeito e para antes de confirmar, a entrega pode voltar. Idempotência do consumidor usa uma identidade estável para reconhecer que aquele efeito já foi realizado, sem presumir entrega única pelo broker.",
+        "mechanism": "Fila.proximo usa peek e não remove; confirmar remove. DemoEntregaDuplicada registra duas vezes o mesmo evento ainda presente. Notificacoes.registrarUmaVez consulta processados antes de adicionar o aviso e depois registra seu ID. O efeito aqui é uma lista local, não envio de e-mail.",
+        "example": "O evento-1 de Ana produz [Ana, Ana] sem deduplicação e [Ana] com deduplicação. Nos dois casos, a primeira tentativa ocorre antes do ACK; muda o tratamento da identidade no consumidor.",
+        "teachingCue": "Pergunte quantos avisos haverá antes de rodar. Mostre onde o ID e o efeito ficam; o HashSet não torna a checagem e a gravação atômicas sob concorrência."
+      },
+      {
+        "definition": "Recuperação durável exige persistência e coordenação das etapas relevantes. Uma fila em ArrayDeque e um conjunto em HashSet desaparecem quando o processo termina. Um modelo SQL pode descrever a garantia necessária sem comprovar que a aplicação já usa um broker, transações ou recuperação após crash.",
+        "mechanism": "contratos.sql descreve produtor gravando matrícula e outbox juntos, e consumidor gravando ID único e aviso juntos. ACK deve vir após commit local. Se o efeito for uma API externa, essa transação não cobre automaticamente a chamada; é preciso a garantia do destino ou outra coordenação.",
+        "example": "As paradas Java omitem etapas controladamente sem matar a JVM. Saga usa outro cenário: reserva, cobrança recusada e compensação da reserva; não reverte o tempo nem o histórico da tentativa.",
+        "teachingCue": "Declare memória e execução sequencial. Peça que o aluno localize o commit e a fronteira externa; não confunda o desenho da garantia com uma integração implementada."
+      }
+    ]
+  }
+]

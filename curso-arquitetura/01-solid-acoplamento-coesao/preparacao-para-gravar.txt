@@ -1,0 +1,25 @@
+Fernanda, o fio condutor desta aula é organizar responsabilidades e dependências para reduzir o impacto das mudanças. São dez minutos de teoria e dez de Java. Abra com a capa e apresente os três temas: acoplamento, coesão e SOLID. Depois introduza a história que acompanha a aula inteira.
+
+Ana, Bia e Clara compraram um curso. A regra é: pagamento confirmado libera acesso; a notificação comunica essa liberação. Lance a pergunta: se o e-mail cair, quem já pagou deve ficar sem acesso? Guarde a resposta da execução para o final da teoria.
+
+Comece pelo acoplamento: o que uma parte conhece e exige da outra. Na primeira versão, a classe de matrícula cria um Email diretamente. Se o canal mudar para WhatsApp, você precisa editar a matrícula, embora a regra de acesso continue igual. Esse é o efeito concreto que o diagrama deve mostrar. Também existe uma dependência na execução: o acesso espera o envio terminar com sucesso.
+
+Coesão é o quanto as responsabilidades reunidas contribuem para um mesmo propósito. Consultar o pagamento e decidir o acesso pertencem ao caso de uso de matrícula. Os detalhes de enviar uma mensagem pertencem à comunicação. Uma classe coesa pode ter vários métodos.
+
+Entre no SOLID pela responsabilidade única, o S: separar razões independentes de mudança. Alterar o critério de acesso e trocar o texto do aviso são mudanças motivadas por necessidades diferentes. Coordenar o fluxo continua sendo responsabilidade do caso de uso.
+
+Depois explique o D, inversão de dependência. A matrícula conhece os contratos ConsultaPagamento e Notificador. Email e WhatsApp implementam o contrato de notificação. A classe Demo escolhe o canal e o entrega pelo construtor. Receber o objeto é injeção de dependência; proteger a regra com uma abstração é a ideia da inversão.
+
+O O significa aberto para extensão e fechado para modificação. Neste exemplo, acrescentar um canal preserva a regra de matrícula. A montagem muda na Demo. Isso não significa nunca mais editar a classe: uma nova regra de acesso pode exigir alteração.
+
+O L é substituição de Liskov. Implementações substituíveis precisam preservar as promessas do contrato, além da assinatura. Aqui, enviar pode sinalizar uma falha prevista. Retornar sucesso sem sequer enviar quebra a expectativa. Implementar a interface não garante comportamento correto.
+
+O I é segregação de interfaces. A matrícula precisa consultar pagamento; não precisa depender de estorno ou emissão de nota. O contrato deve corresponder ao que esse consumidor necessita.
+
+Na prática, comece por MatriculasAcopladas e mostre a ordem: consultar, enviar, liberar. Execute a Demo normal: as duas versões liberam três acessos. Peça uma previsão e execute o cenário falha. A primeira libera zero; a segunda, três, com três avisos pendentes.
+
+Abra Matriculas e explique a causa: ela confirma o pagamento, registra o acesso e trata a falha do aviso. Essa diferença vem da ordem e do tratamento da exceção. Interfaces, sozinhas, não produzem tolerância a falhas.
+
+Execute então o cenário WhatsApp: o canal muda sem alterar Matriculas. Esse é o segundo momento de descoberta, conectando inversão, extensão e substituição. Por fim, execute pendente: nenhuma versão libera acesso, porque a exigência do pagamento continua válida.
+
+Tudo é uma simulação local. As mensagens só aparecem no terminal; os avisos pendentes ficam em memória, sem reenvio automático. Encerre retomando: coesão orienta o que fica junto; acoplamento descreve as dependências; SOLID ajuda a tomar essas decisões.
