@@ -8,6 +8,10 @@ Robert C. Martin apresenta a arquitetura como círculos concêntricos: regras de
 
 Neste exemplo, `Enrollment` e `PaymentStatus` guardam conceitos e regras centrais. `EnrollStudent` e `ConfirmEnrollmentPayment` coordenam os casos de uso. Os controllers convertem chamadas externas em pedidos compreendidos pelos casos de uso; os gateways traduzem os contratos internos para AppMax e JPA. `Main` escolhe e conecta as implementações concretas. Interfaces como `PaymentProvider` e `EnrollmentRepository` ficam junto dos casos de uso; os gateways externos implementam esses contratos.
 
+### E “primary” e “secondary”?
+
+Você pode encontrar esses termos ao estudar a Arquitetura Hexagonal de Alistair Cockburn. Eles descrevem quem inicia uma conversa: um ator inicia a conversa **primary** com a aplicação; a aplicação inicia uma conversa **secondary** com algo de que precisa, como um provedor de pagamento ou repositório. No entanto, **primary/secondary não são os nomes das camadas ou dos círculos da Clean Architecture** de Robert C. Martin. Aqui usamos os nomes da Clean: Entities, Use Cases, Interface Adapters e Frameworks & Drivers. Por exemplo, `EnrollmentHttpController` está em Interface Adapters; `PaymentProvider` é um contrato usado pelos Use Cases; e `AppMaxPaymentAdapter` traduz esse contrato para a integração externa. A separação importante na Clean é manter as dependências do código apontando para dentro, conforme a Dependency Rule.
+
 ## Estrutura do projeto
 
 ```mermaid
