@@ -6,7 +6,33 @@ Versão independente em Java 17+ da arquitetura Ports & Adapters de Alistair Coc
 
 No artigo original, Cockburn descreve uma aplicação que pode funcionar sem depender de uma interface de usuário ou de um banco específico. Uma **port** representa uma conversa com um propósito; um **adapter** traduz uma tecnologia concreta para essa conversa. Assim, a aplicação pode ser acionada por diferentes atores e pode conversar com implementações substituíveis de serviços externos.
 
-Cockburn chama de **primary** os ports e adapters pelos quais um ator dirige a aplicação. Chama de **secondary** os ports e adapters usados quando a própria aplicação dirige uma conversa, por exemplo com um provedor de pagamento ou banco de dados. O critério é quem inicia a conversa, e não se a tecnologia é “entrada” ou “saída”.
+### O que significam primary e secondary?
+
+Esses nomes parecem técnicos, mas descrevem uma coisa simples: **quem começa a conversa com a aplicação**.
+
+- **Port (porta)** é um contrato: diz que conversa a aplicação oferece ou de que conversa ela precisa. Por exemplo, `EnrollStudent` diz como pedir uma matrícula; `PaymentProvider` diz como pedir uma cobrança. O contrato usa os termos do negócio, sem exigir HTTP, JPA ou AppMax.
+- **Adapter (adaptador)** traduz entre uma tecnologia concreta e o contrato. `EnrollmentHttpAdapter`, por exemplo, transforma HTTP/JSON em uma chamada compreendida pela aplicação.
+- **Primary (primário)** é o lado de onde alguém inicia uma ação para usar a aplicação. A pessoa que envia um `POST` ou digita no console é o ator; `EnrollmentHttpAdapter` e `PixConsoleAdapter` são primary adapters. Eles chamam primary ports como `EnrollStudent` ou `CreatePixEnrollment`.
+- **Secondary (secundário)** é o lado de que a aplicação precisa para completar uma ação. Durante um caso de uso, a aplicação chama ports como `PaymentProvider` ou `EnrollmentRepository`; os adapters `AppMaxPaymentAdapter` e `JpaEnrollmentRepository` atendem a esses contratos.
+
+Uma forma de lembrar: no lado **primary**, o ator dirige a aplicação; no lado **secondary**, a aplicação dirige a conversa com um serviço de que precisa. “Primário” e “secundário” não significam mais importante/menos importante. Também não são sinônimos de entrada/saída definidos pela direção dos dados. O critério de Cockburn é quem inicia a conversa.
+
+#### Um fluxo deste projeto
+
+Quando alguém cria uma matrícula pela API, a sequência é:
+
+```text
+cliente HTTP
+  -> EnrollmentHttpAdapter (primary adapter: traduz HTTP/JSON)
+  -> EnrollStudent (primary port: contrato para pedir matrícula)
+  -> EnrollStudentService (caso de uso)
+  -> PaymentProvider (secondary port: contrato de pagamento)
+  -> AppMaxPaymentAdapter (secondary adapter: conversa com AppMax)
+  -> EnrollmentRepository (secondary port: contrato de persistência)
+  -> JpaEnrollmentRepository (secondary adapter: conversa com JPA/H2)
+```
+
+O `Main` instancia os componentes concretos e os conecta. No fluxo Pix pelo terminal, `PixConsoleAdapter` faz o papel de primary adapter e chama `CreatePixEnrollment` ou `CheckPixEnrollment`. Assim, o terminal também entra na aplicação por uma port.
 
 Neste projeto, `EnrollStudent`, `ManageEnrollments`, `CreatePixEnrollment` e `CheckPixEnrollment` são primary ports implementadas pelos casos de uso. O console e a API HTTP são primary adapters. `PaymentProvider`, `PixPaymentProvider` e `EnrollmentRepository` são secondary ports; adapters AppMax e JPA/Hibernate implementam esses contratos. `Main` conecta uma combinação concreta. Os nomes das pastas refletem os termos primary/secondary; são uma organização deste projeto, não uma árvore de diretórios obrigatória definida por Cockburn.
 
@@ -20,11 +46,11 @@ flowchart TD
     java --> domain["domain/<br/>Enrollment / PaymentStatus"]
     java --> application["application/"]
     application --> ports["ports/"]
-    ports --> primary["primary/<br/>EnrollStudent / ManageEnrollments"]
-    ports --> secondary["secondary/<br/>PaymentProvider / EnrollmentRepository"]
+    ports --> primary["primary/<br/>EnrollStudent / ManageEnrollments /<br/>CreatePixEnrollment / CheckPixEnrollment"]
+    ports --> secondary["secondary/<br/>PaymentProvider / PixPaymentProvider /<br/>EnrollmentRepository"]
     application --> usecases["usecases/<br/>*Service"]
     java --> adapters["adapters/"]
-    adapters --> primaryAdapters["primary/<br/>ConsoleEnrollmentAdapter / EnrollmentHttpAdapter"]
+    adapters --> primaryAdapters["primary/<br/>ConsoleEnrollmentAdapter / PixConsoleAdapter /<br/>EnrollmentHttpAdapter"]
     adapters --> secondaryAdapters["secondary/<br/>AppMax / JpaEnrollmentRepository"]
     secondaryAdapters --> persistence["persistence/"]
     java --> main["Main.java"]
@@ -37,9 +63,9 @@ As setas contínuas indicam chamadas em execução; as setas tracejadas indicam 
 
 ```mermaid
 flowchart LR
-    actor["Pessoa / CLI"] --> console["Primary adapter<br/>ConsoleEnrollmentAdapter"]
+    actor["Pessoa / CLI"] --> console["Primary adapters<br/>ConsoleEnrollmentAdapter / PixConsoleAdapter"]
     httpClient["Cliente HTTP"] --> http["Primary adapter<br/>EnrollmentHttpAdapter"]
-    console --> primaryPort["Primary port<br/>EnrollStudent"]
+    console --> primaryPort["Primary ports<br/>EnrollStudent / CreatePixEnrollment / CheckPixEnrollment"]
     http --> managePort["Primary port<br/>ManageEnrollments"]
     service["Use case<br/>EnrollStudentService"] -. "implementa" .-> primaryPort
     manageService["Use case<br/>ManageEnrollmentsService"] -. "implementa" .-> managePort
@@ -56,7 +82,7 @@ flowchart LR
     main --> jpa
 ```
 
-Os comandos `pix-create` e `pix-check` exercitam as outras duas primary ports. O diagrama simplifica a composição: `Main` também conecta seus respectivos casos de uso e o adapter de Pix.
+Os comandos `pix-create` e `pix-check` usam `PixConsoleAdapter`, que chama `CreatePixEnrollment` e `CheckPixEnrollment`. `Main` permanece responsável por montar os casos de uso, o adapter de console, o adapter AppMax e o repositório JPA.
 
 ```sh
 # A partir da raiz do repositório
@@ -110,6 +136,7 @@ A demo (`./executar.sh demo`) usa os mesmos pedidos e respostas simuladas da ver
 - `application/ports/secondary/`: conversas secundárias que a aplicação inicia com atores externos.
 - `application/usecases/`: execução dos casos de uso no interior da aplicação.
 - `adapters/primary/`: adapters que traduzem as entradas de atores para as primary ports.
+- `adapters/primary/PixConsoleAdapter`: traduz os comandos Pix do terminal para as primary ports correspondentes.
 - `adapters/secondary/`: adapters que traduzem as secondary ports para tecnologias externas.
 - `adapters/secondary/persistence/`: entidades JPA, fora do domínio e dos casos de uso.
 - `Main.java`: composição explícita dos adapters e do núcleo.
