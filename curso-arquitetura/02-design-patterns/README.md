@@ -1,28 +1,70 @@
-# Aula 02 — Design Patterns na Prática
+# Aula 2 — Design Patterns na prática
 
-Java 21+. Na pasta da aula:
+A gravação apresenta Factory, Singleton, Strategy e Adapter. A montagem explícita pelo main demonstra injeção de dependência (DI). O exemplo integrado é um checkout com política de preço, fornecedores de pagamento e um SDK legado.
 
-```bash
-cd /Users/fernanda/Desktop/kipperdev/curso-arquitetura/02-design-patterns
-bash executar.sh sem-adapter
-bash executar.sh compra
-bash executar.sh sem-desconto
-bash executar.sh outro-fornecedor
-bash executar.sh singleton
-```
+## Conceitos apresentados
 
-O script compila antes de executar e localiza a própria pasta. Cada exemplo tem um `main` separado em `pratica/`.
+### Factory
 
-- `DemoCompra`: Factory + Strategy + Adapter + Singleton, montados por injeção no construtor.
-- `DemoSemAdapter`: erro intencional de unidade na chamada ao SDK.
-- `DemoSemDesconto`: troca somente a política de preço.
-- `DemoSingleton`: duas compras compartilham o mesmo registro; ambas enxergam o total 2.
-- `DemoOutroFornecedor`: troca somente o fornecedor escolhido na Factory.
+Concentra a criação e escolhe a implementação; o checkout recebe o contrato Pagamento pronto.
 
-Tudo é simulado localmente: não há cobrança, API ou acesso à rede. A aplicação usa centavos; o SDK fictício recebe reais como texto. Com preço de R$ 100 e desconto Pix de 10%, o total esperado é R$ 90. O erro sem Adapter faz o SDK interpretar R$ 9.000.
+~~~mermaid
+flowchart LR
+  Main --> Factory[PagamentoFactory.criar]
+  Factory -->|LEGADO| Adapter[PagamentoLegadoAdapter]
+  Factory -->|LOCAL| Local[PagamentoLocal]
+  Adapter --> Contrato[Pagamento]
+  Local --> Contrato
+  Contrato --> Checkout
+~~~
 
-Roteiro em `roteiro.md`; [18 slides no Excalidraw](https://app.excalidraw.com/s/5pZP9SZcJC3/9VUYBPV17tF), também salvos em `teoria.excalidraw`. Áudio de revisão: `preparacao-para-gravar.mp3` (3min49s). Aula de 30 minutos: quatro blocos de 5 minutos + 10 de prática.
+### Singleton
 
-Código preparado, ainda não compilado nem executado.
+Fornece a mesma instância durante a execução do programa. A demonstração usa o registro de compras compartilhado por Ana e Bia; o estado volta ao reiniciar o processo.
 
-`RegistroCompras` é um contador didático em memória, usado em uma única thread. Cada execução Java começa do zero; ele não persiste compras nem coordena múltiplos processos.
+~~~mermaid
+flowchart LR
+  Ana --> Registro[RegistroCompras: mesma instância]
+  Bia --> Registro
+  Registro --> Contador[contador compartilhado]
+~~~
+
+### Strategy
+
+Permite selecionar uma regra de preço mantendo o mesmo contrato: desconto Pix ou preço sem desconto.
+
+~~~mermaid
+flowchart LR
+  Checkout --> Politica[PoliticaPreco]
+  Pix[DescontoPix] -. implementa .-> Politica
+  Sem[SemDesconto] -. implementa .-> Politica
+~~~
+
+### Adapter
+
+Traduz a chamada em centavos do checkout para a API legada que recebe valor em reais como texto e moeda BRL.
+
+~~~mermaid
+flowchart LR
+  Checkout -->|centavos| Adapter[PagamentoLegadoAdapter]
+  Adapter -->|reais em texto + BRL| SDK[SdkLegado]
+  SDK -->|resposta convertida| Checkout
+~~~
+
+### Injeção de dependência
+
+O main monta as peças e entrega suas referências ao checkout; o checkout usa os objetos recebidos.
+
+~~~mermaid
+flowchart LR
+  Main -->|injeta| Checkout
+  Main --> Strategy[PoliticaPreco]
+  Main --> Factory[Factory cria Pagamento]
+  Main --> Singleton[RegistroCompras]
+~~~
+
+## Exemplos e transcrição
+
+Partindo desta pasta, rode bash executar.sh compra, bash executar.sh singleton, bash executar.sh sem-desconto, bash executar.sh outro-fornecedor ou bash executar.sh sem-adapter.
+
+Leia a transcrição com timestamps em transcricao.md. Ela foi gerada automaticamente em português pelo ElevenLabs Scribe a partir da gravação FHD no Drive; não foi revisada palavra a palavra.

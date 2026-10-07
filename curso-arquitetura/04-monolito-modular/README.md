@@ -1,17 +1,45 @@
-# Monólito Modular
+# Aula 4 — Monólito modular
 
-Java 21+ e Python 3 (sqlite3 da biblioteca padrão). O Java mostra os módulos; o SQL mostra uma transação real e efêmera.
+A aula mostra módulos de matrícula e cobranças no mesmo aplicativo. Cada módulo guarda seus dados e expõe um contrato para os outros; a comunicação é local e o sistema continua gerando um único artefato e um único deploy.
 
-Partindo da **pasta do curso**:
+## Conceitos apresentados
 
-```sh
-bash 04-monolito-modular/executar.sh modulos
-bash 04-monolito-modular/executar.sh sem-transacao
-bash 04-monolito-modular/executar.sh com-transacao
-```
+### Monólito modular
 
-Cada comando compila antes de executar. Veja `roteiro.md` para ordem, previsões e causas dos resultados. `teoria.excalidraw` contém os diagramas editáveis. Links e estado da revisão estão em `../planejamento/estado-do-curso.md`.
+Um único processo e deploy podem conter módulos separados por responsabilidade.
 
-## Excalidraw ao vivo
+~~~mermaid
+flowchart LR
+  subgraph App[Uma aplicação e um deploy]
+    Academico[Módulo acadêmico]
+    Financeiro[Módulo financeiro]
+  end
+~~~
 
-https://app.excalidraw.com/s/5pZP9SZcJC3/6qNRGJkCHac
+### Fronteira e contrato entre módulos
+
+Matrículas consulta o contrato público de cobranças. Ela não abre a entidade interna nem altera diretamente o banco do módulo financeiro.
+
+~~~mermaid
+flowchart LR
+  Matriculas[Módulo acadêmico] -->|pedido id| Contrato[Contrato: está confirmado?]
+  Contrato --> Cobrancas[Módulo financeiro]
+  Cobrancas --> Banco[(Dados de cobranças: dono financeiro)]
+~~~
+
+### Regra de matrícula
+
+O resultado da consulta define se a aluna entra na lista de matriculadas; pagamentos pendentes não liberam acesso.
+
+~~~mermaid
+flowchart TD
+  Pedido --> Consulta[Consultar status da cobrança]
+  Consulta -->|confirmado| Matricula[Liberar matrícula]
+  Consulta -->|pendente| Fim[Não matricular]
+~~~
+
+## Exemplo e transcrição
+
+Java 21+. Partindo desta pasta, execute bash executar.sh modulos. A demo usa os pedidos de Ana e Bia e mostra a dependência entre os contratos dos módulos.
+
+Leia a transcrição com timestamps em transcricao.md. Ela foi gerada automaticamente em português pelo ElevenLabs Scribe a partir da gravação FHD no Drive; não foi revisada palavra a palavra.

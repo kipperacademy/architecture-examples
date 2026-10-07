@@ -12,7 +12,7 @@ public class DemoHexagonalCsv {
     public static void main(String[] args) throws IOException {
         RepositorioMatriculas repositorio = new RepositorioEmMemoria();
         Matricular matricular = new MatricularAluno(repositorio);
-        EntradaTerminal csv = new EntradaTerminal(matricular);
+        EntradaCsv csv = new EntradaCsv(matricular);
 
         csv.importar(Path.of("dados", "pedidos.csv"));
         System.out.println("Matrículas salvas: " + repositorio.listar());
