@@ -38,8 +38,13 @@ flowchart TD
   Consulta -->|pendente| Fim[Não matricular]
 ~~~
 
-## Exemplo e transcrição
+## Código de exemplo
 
-Java 21+. Partindo desta pasta, execute bash executar.sh modulos. A demo usa os pedidos de Ana e Bia e mostra a dependência entre os contratos dos módulos.
+Os arquivos Java em `pratica/` usam os pedidos de Ana e Bia para mostrar os contratos e a dependência entre os módulos.
 
-Leia a transcrição com timestamps em transcricao.md. Ela foi gerada automaticamente em português pelo ElevenLabs Scribe a partir da gravação FHD no Drive; não foi revisada palavra a palavra.
+Para compilar e executar a demonstração a partir da raiz do repositório:
+
+~~~bash
+javac -d /tmp/aula4 curso-arquitetura/04-monolito-modular/pratica/financeiro/*.java curso-arquitetura/04-monolito-modular/pratica/academico/*.java curso-arquitetura/04-monolito-modular/pratica/DemoModulos.java
+java -cp /tmp/aula4 DemoModulos
+~~~

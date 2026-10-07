@@ -76,8 +76,13 @@ flowchart LR
   Main[Main: monta e injeta] --> Matriculas
 ~~~
 
-## Exemplos e transcrição
+## Código de exemplo
 
-Partindo desta pasta, execute bash executar.sh DemoAcoplamento, bash executar.sh DemoDesacoplamento, bash executar.sh DemoEmail, bash executar.sh DemoWhatsApp ou bash executar.sh DemoPagamentoPendente. Cada demo usa o caso de matrícula da aula.
+Os arquivos Java em `pratica/` demonstram acoplamento e desacoplamento no caso de matrícula e notificações.
 
-Leia a transcrição com timestamps em transcricao.md. Ela foi gerada automaticamente em português pelo ElevenLabs Scribe a partir da gravação FHD no Drive; não foi revisada palavra a palavra.
+Para compilar e executar uma demonstração a partir da raiz do repositório:
+
+~~~bash
+javac -d /tmp/aula1 curso-arquitetura/01-solid-acoplamento/pratica/*.java
+java -cp /tmp/aula1 DemoAcoplamento
+~~~

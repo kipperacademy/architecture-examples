@@ -63,8 +63,13 @@ flowchart LR
   Main --> Singleton[RegistroCompras]
 ~~~
 
-## Exemplos e transcrição
+## Código de exemplo
 
-Partindo desta pasta, rode bash executar.sh compra, bash executar.sh singleton, bash executar.sh sem-desconto, bash executar.sh outro-fornecedor ou bash executar.sh sem-adapter.
+Os arquivos Java em `pratica/` demonstram os padrões apresentados na aula por meio do fluxo de compra e pagamento.
 
-Leia a transcrição com timestamps em transcricao.md. Ela foi gerada automaticamente em português pelo ElevenLabs Scribe a partir da gravação FHD no Drive; não foi revisada palavra a palavra.
+Para compilar e executar uma demonstração a partir da raiz do repositório:
+
+~~~bash
+javac -d /tmp/aula2 curso-arquitetura/02-design-patterns/pratica/*.java
+java -cp /tmp/aula2 DemoCompra
+~~~

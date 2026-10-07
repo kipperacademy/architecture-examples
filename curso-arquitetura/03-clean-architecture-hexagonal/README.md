@@ -51,8 +51,13 @@ flowchart LR
   Aplicacao --> Saida
 ~~~
 
-## Exemplos e transcrição
+## Código de exemplo
 
-Java 21+. Partindo desta pasta, execute bash executar.sh clean-memoria, bash executar.sh clean-arquivo, bash executar.sh hex-terminal Ana CONFIRMADO ou bash executar.sh hex-csv. O CSV de entrada está em dados/pedidos.csv; a demo de arquivo grava em dados/matriculas.txt.
+Os arquivos Java em `pratica/` demonstram a separação de regras, portas e adaptadores nas versões Clean Architecture e Hexagonal. A demonstração CSV usa registros de exemplo definidos no próprio código.
 
-Leia a transcrição com timestamps em transcricao.md. Ela foi gerada automaticamente em português pelo ElevenLabs Scribe a partir da gravação FHD no Drive; não foi revisada palavra a palavra.
+Para compilar e executar uma demonstração a partir da raiz do repositório:
+
+~~~bash
+javac -d /tmp/aula3 $(find curso-arquitetura/03-clean-architecture-hexagonal/pratica -name '*.java')
+java -cp /tmp/aula3 demos.DemoHexagonalCsv
+~~~
