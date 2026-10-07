@@ -61,6 +61,21 @@ public final class JpaEnrollmentRepository implements EnrollmentRepository, Auto
                 .getResultList().stream().map(e -> new Enrollment(e.getId(), e.getStudent(), e.getCourse(), e.getAmountInCents())).toList());
     }
 
+    @Override public Optional<Enrollment> findById(String id) {
+        return read(em -> Optional.ofNullable(em.find(EnrollmentEntity.class, id))
+                .map(e -> new Enrollment(e.getId(), e.getStudent(), e.getCourse(), e.getAmountInCents())));
+    }
+
+    @Override public void deleteById(String id) {
+        inTransaction(em -> {
+            var enrollment = em.find(EnrollmentEntity.class, id);
+            if (enrollment != null) em.remove(enrollment);
+            var pixPayment = em.find(PendingPixPaymentEntity.class, id);
+            if (pixPayment != null) em.remove(pixPayment);
+            return null;
+        });
+    }
+
     @Override public void savePendingPix(PendingPixPayment payment) {
         inTransaction(em -> {
             var entity = new PendingPixPaymentEntity(payment.enrollmentId(), payment.student(), payment.course(),

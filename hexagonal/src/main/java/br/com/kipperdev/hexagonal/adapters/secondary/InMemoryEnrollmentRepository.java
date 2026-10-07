@@ -10,8 +10,18 @@ public final class InMemoryEnrollmentRepository implements EnrollmentRepository 
     private final List<Enrollment> enrollments = new ArrayList<>();
     private final java.util.Map<String, PendingPixPayment> pendingPix = new java.util.HashMap<>();
 
-    @Override public void save(Enrollment enrollment) { enrollments.add(enrollment); }
+    @Override public void save(Enrollment enrollment) {
+        enrollments.removeIf(existing -> existing.id().equals(enrollment.id()));
+        enrollments.add(enrollment);
+    }
     @Override public List<Enrollment> findAll() { return List.copyOf(enrollments); }
+    @Override public java.util.Optional<Enrollment> findById(String id) {
+        return enrollments.stream().filter(enrollment -> enrollment.id().equals(id)).findFirst();
+    }
+    @Override public void deleteById(String id) {
+        enrollments.removeIf(enrollment -> enrollment.id().equals(id));
+        pendingPix.remove(id);
+    }
     @Override public void savePendingPix(PendingPixPayment payment) { pendingPix.put(payment.enrollmentId(), payment); }
     @Override public java.util.Optional<PendingPixPayment> findPendingPix(String id) { return java.util.Optional.ofNullable(pendingPix.get(id)); }
     @Override public void updatePendingPixStatus(String id, String status) {

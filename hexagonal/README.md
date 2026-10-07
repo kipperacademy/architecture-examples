@@ -2,27 +2,106 @@
 
 Versão independente em Java 17+ da arquitetura Ports & Adapters de Alistair Cockburn. O núcleo da aplicação define **ports** conforme as conversas que precisa oferecer ou solicitar. **Primary adapters** acionam a aplicação; **secondary adapters** são acionados por ela para falar com pagamentos ou persistência. A persistência usa JPA com Hibernate e H2 em arquivo, sem Spring. As entidades JPA ficam no lado secondary.
 
+## Ideia da arquitetura
+
+No artigo original, Cockburn descreve uma aplicação que pode funcionar sem depender de uma interface de usuário ou de um banco específico. Uma **port** representa uma conversa com um propósito; um **adapter** traduz uma tecnologia concreta para essa conversa. Assim, a aplicação pode ser acionada por diferentes atores e pode conversar com implementações substituíveis de serviços externos.
+
+Cockburn chama de **primary** os ports e adapters pelos quais um ator dirige a aplicação. Chama de **secondary** os ports e adapters usados quando a própria aplicação dirige uma conversa, por exemplo com um provedor de pagamento ou banco de dados. O critério é quem inicia a conversa, e não se a tecnologia é “entrada” ou “saída”.
+
+Neste projeto, `EnrollStudent`, `ManageEnrollments`, `CreatePixEnrollment` e `CheckPixEnrollment` são primary ports implementadas pelos casos de uso. O console e a API HTTP são primary adapters. `PaymentProvider`, `PixPaymentProvider` e `EnrollmentRepository` são secondary ports; adapters AppMax e JPA/Hibernate implementam esses contratos. `Main` conecta uma combinação concreta. Os nomes das pastas refletem os termos primary/secondary; são uma organização deste projeto, não uma árvore de diretórios obrigatória definida por Cockburn.
+
+## Estrutura do projeto
+
+```mermaid
+flowchart TD
+    root["hexagonal/"] --> pom["pom.xml"]
+    root --> run["executar.sh"]
+    root --> java["src/main/java/br/com/kipperdev/hexagonal/"]
+    java --> domain["domain/<br/>Enrollment / PaymentStatus"]
+    java --> application["application/"]
+    application --> ports["ports/"]
+    ports --> primary["primary/<br/>EnrollStudent / ManageEnrollments"]
+    ports --> secondary["secondary/<br/>PaymentProvider / EnrollmentRepository"]
+    application --> usecases["usecases/<br/>*Service"]
+    java --> adapters["adapters/"]
+    adapters --> primaryAdapters["primary/<br/>ConsoleEnrollmentAdapter / EnrollmentHttpAdapter"]
+    adapters --> secondaryAdapters["secondary/<br/>AppMax / JpaEnrollmentRepository"]
+    secondaryAdapters --> persistence["persistence/"]
+    java --> main["Main.java"]
+    root --> resources["src/main/resources/META-INF/persistence.xml"]
+```
+
+## Organização por ports e adapters
+
+As setas contínuas indicam chamadas em execução; as setas tracejadas indicam dependência/implementação de contrato. O núcleo contém as ports e os casos de uso; adapters concretos dependem dessas ports para traduzir console, AppMax e JPA/H2.
+
+```mermaid
+flowchart LR
+    actor["Pessoa / CLI"] --> console["Primary adapter<br/>ConsoleEnrollmentAdapter"]
+    httpClient["Cliente HTTP"] --> http["Primary adapter<br/>EnrollmentHttpAdapter"]
+    console --> primaryPort["Primary port<br/>EnrollStudent"]
+    http --> managePort["Primary port<br/>ManageEnrollments"]
+    service["Use case<br/>EnrollStudentService"] -. "implementa" .-> primaryPort
+    manageService["Use case<br/>ManageEnrollmentsService"] -. "implementa" .-> managePort
+    service --> domain["Domain<br/>Enrollment / PaymentStatus"]
+    service --> paymentPort["Secondary port<br/>PaymentProvider"]
+    service --> repoPort["Secondary port<br/>EnrollmentRepository"]
+    appmax["Secondary adapter<br/>AppMax"] -. "implementa" .-> paymentPort
+    jpa["Secondary adapter<br/>JPA/Hibernate + H2"] -. "implementa" .-> repoPort
+    main["Main<br/>composição"] --> console
+    main --> http
+    main --> service
+    main --> manageService
+    main --> appmax
+    main --> jpa
+```
+
+Os comandos `pix-create` e `pix-check` exercitam as outras duas primary ports. O diagrama simplifica a composição: `Main` também conecta seus respectivos casos de uso e o adapter de Pix.
+
 ```sh
-./executar.sh
+# A partir da raiz do repositório
+cd hexagonal
+./executar.sh api
 ```
 
-A execução requer Maven 3.9+ e JDK 17+. O script compila e inicia a aplicação com `mvn compile exec:java`. Por padrão, o banco H2 em arquivo fica em `data/enrollments.mv.db` (relativo a esta pasta). Para escolher outro URL JDBC H2, configure `ENROLLMENT_DB_URL`, por exemplo `ENROLLMENT_DB_URL='jdbc:h2:file:/tmp/turma;DB_CLOSE_ON_EXIT=FALSE' ./executar.sh`.
+A execução requer JDK 17 ou superior e Maven 3.9 ou superior. `api` é o modo padrão e pode ser omitido (`./executar.sh`). Ele inicia a API HTTP em `127.0.0.1:8080`, usa o simulador local e persiste com JPA/Hibernate em H2. O script compila e inicia a aplicação com `mvn compile exec:java`. Para executar a demonstração pelo console, rode `./executar.sh demo`.
 
-A demo usa os mesmos pedidos e respostas simuladas da versão Clean: Ana confirmada, Bia pendente e Clara recusada. Só Ana recebe matrícula. Rodar novamente atualiza a matrícula de Ana pela chave estável `enr-ana`; Bia e Clara não são gravadas.
+## API CRUD de matrículas
 
-## Ports e adapters: primary e secondary
+A API recebe JSON em `http://127.0.0.1:8080/api/enrollments`; configure outra porta com `API_PORT`. A criação passa pela primary port `EnrollStudent` e só grava a matrícula quando o pagamento está confirmado. Uma criação pendente retorna `202` e ainda não aparece nas consultas. No simulador, novos IDs são confirmados por padrão; `enr-bia` fica pendente e `enr-clara` é recusada.
 
-```text
-ConsoleEnrollmentAdapter ──> EnrollStudent (primary port)
-                                  │
-                    ┌─────────────┴──────────────┐
-                    v                            v
-        PixPaymentProvider (secondary)   EnrollmentRepository (secondary)
-                    ^                            ^
-       AppMaxPixPaymentAdapter       JpaEnrollmentRepository
+| Método | Rota | Operação |
+|---|---|---|
+| `GET` | `/api/enrollments` | Lista matrículas confirmadas |
+| `GET` | `/api/enrollments/{id}` | Busca uma matrícula |
+| `POST` | `/api/enrollments` | Cobra e cria matrícula se o pagamento for confirmado |
+| `PUT` | `/api/enrollments/{id}` | Atualiza estudante e curso |
+| `DELETE` | `/api/enrollments/{id}` | Remove uma matrícula |
+
+Na atualização, o `id` e o valor cobrado permanecem imutáveis para preservar a relação com o pagamento original. A API local fica vinculada ao loopback e não deve ser exposta diretamente à internet.
+
+```sh
+curl http://127.0.0.1:8080/api/enrollments
+curl -i -X POST http://127.0.0.1:8080/api/enrollments \
+  -H 'Content-Type: application/json' \
+  -d '{"id":"enr-joana","student":"Joana","course":"Arquitetura","amountInCents":10000}'
+curl -i http://127.0.0.1:8080/api/enrollments/enr-joana
+curl -i -X PUT http://127.0.0.1:8080/api/enrollments/enr-joana \
+  -H 'Content-Type: application/json' \
+  -d '{"student":"Joana Silva","course":"Hexagonal"}'
+curl -i -X DELETE http://127.0.0.1:8080/api/enrollments/enr-joana
 ```
 
-`EnrollStudent` é uma primary port: descreve uma capacidade pela qual um ator pode acionar o núcleo. `PixPaymentProvider` e `EnrollmentRepository` são secondary ports: descrevem conversas que a aplicação precisa com atores externos. O console implementa um primary adapter; AppMax e JPA/H2 implementam secondary adapters. `InMemoryEnrollmentRepository` é outro secondary adapter para demonstração, não usado pela composição padrão.
+Outros comandos (no diretório `hexagonal/`):
+
+```sh
+./executar.sh pix-create
+./executar.sh pix-check <id-interno-da-matricula>
+```
+
+Por padrão, o banco H2 em arquivo fica em `data/enrollments.mv.db` (relativo a esta pasta). Para escolher outro URL JDBC H2, configure `ENROLLMENT_DB_URL`, por exemplo `ENROLLMENT_DB_URL='jdbc:h2:file:/tmp/turma;DB_CLOSE_ON_EXIT=FALSE' ./executar.sh demo`.
+
+A demo (`./executar.sh demo`) usa os mesmos pedidos e respostas simuladas da versão Clean: Ana confirmada, Bia pendente e Clara recusada. Só Ana recebe matrícula. Rodar novamente atualiza a matrícula de Ana pela chave estável `enr-ana`; Bia e Clara não são gravadas.
 
 ## Pastas
 
@@ -44,7 +123,7 @@ ConsoleEnrollmentAdapter ──> EnrollStudent (primary port)
 
 ### Pix real AppMax
 
-O modo padrão (`./executar.sh` ou `./executar.sh demo`) continua usando o simulador local. O caminho real é explícito e aceita somente Pix; não há campos, endpoints ou tokenização de cartão.
+O modo `demo` continua usando o simulador local. O caminho real de pagamento é explícito via `pix-create` e aceita somente Pix; não há campos de cartão nem tokenização de cartão.
 
 Configure as credenciais **do merchant** (não as credenciais do app) no ambiente, sem gravá-las no projeto:
 

@@ -11,7 +11,7 @@ public final class AppMaxApiSimulator {
     public Response createCharge(Request request) {
         System.out.printf("[AppMax simulada] cobrança de %s centavos para pedido %s%n",
                 request.amountInCents(), request.orderId());
-        return new Response(statusesByOrder.getOrDefault(request.orderId(), "unknown"),
+        return new Response(statusesByOrder.getOrDefault(request.orderId(), "paid"),
                 "appmax-demo-" + request.orderId());
     }
 

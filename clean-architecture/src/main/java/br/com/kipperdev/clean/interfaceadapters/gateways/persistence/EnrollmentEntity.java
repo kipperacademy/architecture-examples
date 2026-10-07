@@ -23,6 +23,11 @@ public class EnrollmentEntity {
         this.amountInCents = enrollment.amountInCents(); this.createdAt = LocalDateTime.now();
     }
 
+    public void updateDetails(String student, String course) {
+        this.student = student;
+        this.course = course;
+    }
+
     public Enrollment toDomain() { return new Enrollment(id, student, course, amountInCents); }
     public String getId() { return id; }
     public String getStudent() { return student; }
