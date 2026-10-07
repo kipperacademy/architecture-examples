@@ -54,5 +54,3 @@ flowchart LR
 ~~~
 
 ## Transcrição
-
-Leia a transcrição com timestamps em transcricao.md. Ela foi gerada automaticamente em português pelo ElevenLabs Scribe a partir da gravação FHD no Drive; não foi revisada palavra a palavra.

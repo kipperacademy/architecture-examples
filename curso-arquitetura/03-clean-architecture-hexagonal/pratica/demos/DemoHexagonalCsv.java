@@ -5,16 +5,13 @@ import adapters.saida.RepositorioEmMemoria;
 import aplicacao.Matricular;
 import aplicacao.MatricularAluno;
 import aplicacao.RepositorioMatriculas;
-import java.io.IOException;
-import java.nio.file.Path;
-
 public class DemoHexagonalCsv {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         RepositorioMatriculas repositorio = new RepositorioEmMemoria();
         Matricular matricular = new MatricularAluno(repositorio);
         EntradaCsv csv = new EntradaCsv(matricular);
 
-        csv.importar(Path.of("dados", "pedidos.csv"));
+        csv.importar("Ana;CONFIRMADO\nBia;PENDENTE");
         System.out.println("Matrículas salvas: " + repositorio.listar());
     }
 }

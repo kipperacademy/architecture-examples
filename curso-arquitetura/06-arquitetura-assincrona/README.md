@@ -108,8 +108,13 @@ flowchart LR
   Entrega --> Banco3[(Banco da entrega)]
 ~~~
 
-## Exemplos e transcrição
+## Código de exemplo
 
-Partindo desta pasta, execute bash executar.sh DemoEntregaDuplicada ou bash executar.sh DemoConsumidorIdempotente. Ambas demonstram reentrega; a segunda usa um ID para aplicar o efeito uma única vez.
+Os arquivos Java em `pratica/` demonstram reentrega de mensagens e o efeito da idempotência no consumidor.
 
-Leia a transcrição com timestamps em transcricao.md. Ela foi gerada automaticamente em português pelo ElevenLabs Scribe a partir da gravação FHD no Drive; não foi revisada palavra a palavra.
+Para compilar e executar uma demonstração a partir da raiz do repositório:
+
+~~~bash
+javac -d /tmp/aula6 curso-arquitetura/06-arquitetura-assincrona/pratica/*.java
+java -cp /tmp/aula6 DemoEntregaDuplicada
+~~~
