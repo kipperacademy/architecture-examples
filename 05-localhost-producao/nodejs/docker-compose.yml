@@ -1,0 +1,7 @@
+services:
+  catalogo-cursos:
+    build: .
+    container_name: catalogo-cursos-node
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
