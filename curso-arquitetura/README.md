@@ -1,6 +1,6 @@
 # Curso de Arquitetura de Software
 
-Exemplos práticos de arquitetura de software em Java. Cada pasta contém um README e código-fonte para executar as demonstrações.
+Exemplos práticos de arquitetura de software e backend. Cada pasta contém código-fonte e instruções curtas para executar as demonstrações.
 
 1. [SOLID e acoplamento](01-solid-acoplamento/README.md)
 2. [Design Patterns na prática](02-design-patterns/README.md)
@@ -8,3 +8,7 @@ Exemplos práticos de arquitetura de software em Java. Cada pasta contém um REA
 4. [Monólito modular](04-monolito-modular/README.md)
 5. [Monólito versus microsserviços](05-monolito-vs-microservicos/README.md)
 6. [Arquitetura assíncrona](06-arquitetura-assincrona/README.md)
+
+## Deploy
+
+- [Do localhost à produção: API Node.js e Docker](aulas/05-localhost-producao/README.md)

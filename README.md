@@ -2,7 +2,7 @@
 
 ## Aula 05 — Do localhost à produção
 
-O exemplo da Aula 05 é uma API simples em Node.js com `GET /cursos` e Dockerfile: [`05-localhost-producao/`](05-localhost-producao/README.md).
+O exemplo da Aula 05 é uma API simples em Node.js com `GET /cursos` e Dockerfile: [`curso-arquitetura/aulas/05-localhost-producao/`](curso-arquitetura/aulas/05-localhost-producao/README.md).
 
 Dois projetos Java independentes e sem Spring, para comparar a organização por políticas/camadas e por portas/adaptadores. Ambos usam JPA com Hibernate e H2 em arquivo para persistir matrículas e pagamentos Pix pendentes. A regra é a mesma: **só uma cobrança confirmada libera a matrícula**.
 
