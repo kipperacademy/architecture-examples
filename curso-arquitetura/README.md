@@ -8,7 +8,3 @@ Exemplos práticos de arquitetura de software e backend. Cada pasta contém cód
 4. [Monólito modular](04-monolito-modular/README.md)
 5. [Monólito versus microsserviços](05-monolito-vs-microservicos/README.md)
 6. [Arquitetura assíncrona](06-arquitetura-assincrona/README.md)
-
-## Deploy
-
-- [Do localhost à produção: API Node.js e Docker](aulas/05-localhost-producao/README.md)
