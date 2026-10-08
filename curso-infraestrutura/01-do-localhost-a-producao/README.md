@@ -42,15 +42,13 @@ O mapeamento `8080:8080` encaminha a porta 8080 da máquina para a porta 8080 do
 
 ## Publicar na VPS Hostinger
 
-O Dockerfile mantém a aplicação independente do domínio e escuta na porta `8080`. O `docker-compose.yml` conecta o container à rede externa `traefik-proxy` e configura o Traefik do Docker Manager para encaminhar `api.srv1460423.hstgr.cloud` para essa porta, com HTTPS.
-
-O DNS `A` e `AAAA` de `api.srv1460423.hstgr.cloud` deve apontar para esta VPS. Na verificação atual, ambos resolvem para os endereços da VPS. Mantenha as portas `80` e `443` acessíveis no firewall. Com o projeto implantado no Docker Manager:
+O Dockerfile e o `docker-compose.yml` não dependem de domínio nem de uma rede externa do Traefik. O Compose publica a porta `8080` da VPS e encaminha as requisições para a aplicação:
 
 ```sh
 docker compose up --build -d
-curl https://api.srv1460423.hstgr.cloud/cursos
+curl http://IP_DA_VPS:8080/cursos
 ```
 
-O Traefik já precisa estar em execução, e o projeto deve compartilhar a rede `traefik-proxy`.
+Para usar um domínio com HTTPS, configure o DNS e o proxy reverso da VPS separadamente para encaminhar o domínio à porta `8080`.
 
 `PORT` e `HOST` podem ser substituídos por variáveis de ambiente. Os padrões são `8080` e `0.0.0.0`.

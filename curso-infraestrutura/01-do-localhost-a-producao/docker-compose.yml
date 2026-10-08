@@ -1,18 +1,6 @@
 services:
   catalogo-cursos:
     build: .
-    container_name: catalogo-cursos-node
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.catalogo-cursos.rule=Host(`api.srv1460423.hstgr.cloud`)"
-      - "traefik.http.routers.catalogo-cursos.entrypoints=websecure"
-      - "traefik.http.routers.catalogo-cursos.tls=true"
-      - "traefik.http.routers.catalogo-cursos.tls.certresolver=letsencrypt"
-      - "traefik.http.services.catalogo-cursos.loadbalancer.server.port=8080"
-    networks:
-      - traefik-proxy
-
-networks:
-  traefik-proxy:
-    external: true
+    ports:
+      - "8080:8080"
