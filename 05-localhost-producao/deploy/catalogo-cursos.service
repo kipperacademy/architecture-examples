@@ -1,0 +1,21 @@
+[Unit]
+Description=API de catálogo de cursos (aula localhost à produção)
+After=network.target
+
+[Service]
+Type=simple
+User=cursos
+Group=cursos
+WorkingDirectory=/opt/catalogo-cursos
+Environment=PORT=8080
+Environment=APP_BIND_ADDRESS=127.0.0.1
+ExecStart=/usr/bin/java -jar /opt/catalogo-cursos/catalogo-cursos.jar
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

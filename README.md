@@ -1,5 +1,9 @@
 # Matrículas em Java: Clean Architecture e Hexagonal
 
+## Aula 05 — Do localhost à produção
+
+O exemplo Java com uma única rota `GET /cursos` e o deck Excalidraw editável estão em [`05-localhost-producao/`](05-localhost-producao/README.md). A sequência cobre IP, localhost, domínio/DNS e implantação numa VPS Hostinger.
+
 Dois projetos Java independentes e sem Spring, para comparar a organização por políticas/camadas e por portas/adaptadores. Ambos usam JPA com Hibernate e H2 em arquivo para persistir matrículas e pagamentos Pix pendentes. A regra é a mesma: **só uma cobrança confirmada libera a matrícula**.
 
 ## Projetos
